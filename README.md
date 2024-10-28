@@ -10,10 +10,9 @@ npm install
 ```
 
 Update the env: [OPTIONAL]
-You can get the credentials from here : https://cloud.walletconnect.com/sign-in
-
+You can get the credentials from here : https://app.dynamic.xyz/dashboard/developer
 ```bash
-NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=""
+NEXT_PUBLIC_DYNAMIC_ENVIRONMENT_ID=""
 ```
 
 Next, run the development server:
