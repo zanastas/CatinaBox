@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Header from '@components/header';
 import Footer from '@components/footer';
-import { FaUsers, FaDna, FaCalendar, FaCoins, FaLock, FaCheck } from 'react-icons/fa';
+import { FaUsers, FaDna, FaCalendar, FaCoins, FaLock, FaCheck, FaBrain, FaAppleAlt, FaDumbbell, FaRunning, FaMoon } from 'react-icons/fa';
+import ExperimentChat from '@/components/experiment-chat';
 
 interface ExperimentDetails {
   name: string;
@@ -17,6 +18,8 @@ interface ExperimentDetails {
   startDate: string;
   endDate: string;
   status: 'active' | 'completed' | 'upcoming';
+  chatId?: string;
+  chatId?: string;
 }
 
 export default function ExperimentDetails() {
@@ -33,6 +36,10 @@ export default function ExperimentDetails() {
     endDate: "2024-09-01",
     status: 'active'
   });
+
+export default function ExperimentDetails() {
+  const params = useParams();
+  const [experiment] = useState<ExperimentDetails>(experiments[params.id as keyof typeof experiments]);
 
   const getStatusBadge = (status: string) => {
     const styles = {
@@ -114,6 +121,13 @@ export default function ExperimentDetails() {
                 ))}
               </div>
             </div>
+
+            {experiment.chatId && (
+              <ExperimentChat
+                experimentId={params.id as string}
+                chatId={experiment.chatId}
+              />
+            )}
           </div>
 
           {/* Sidebar */}

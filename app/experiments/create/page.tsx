@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { FaUpload, FaChevronDown } from 'react-icons/fa';
 import Header from '../../../components/header';
 import Footer from '../../../components/footer';
+import { createExperimentChat } from '@/utils/push';
 
 interface DataType {
   id: string;
@@ -135,13 +136,35 @@ export default function CreateExperiment() {
     }));
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      // Your existing experiment creation logic...
+      
+      // Create a Push chat group for the experiment
+      const pushUser = await initializePushUser(signer);
+      const chatGroup = await createExperimentChat(
+        pushUser,
+        experimentId, // Your experiment ID
+        experimentName // Your experiment name
+      );
+      
+      // Save the chatGroup.chatId along with your experiment data
+      // ... your storage logic ...
+      
+    } catch (error) {
+      console.error('Error creating experiment:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
       <div className="max-w-4xl mx-auto pt-24 pb-12 px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Create New Experiment</h1>
         
-        <form className="space-y-6 bg-white p-8 rounded-xl shadow">
+        <form className="space-y-6 bg-white p-8 rounded-xl shadow" onSubmit={handleSubmit}>
           <div>
             <label className="block text-sm font-medium text-gray-700">Organization Name</label>
             <input
