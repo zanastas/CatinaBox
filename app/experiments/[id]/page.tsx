@@ -22,9 +22,8 @@ interface ExperimentDetails {
   chatId?: string;
 }
 
-export default function ExperimentDetails() {
-  const params = useParams();
-  const [experiment] = useState<ExperimentDetails>({
+const experiments = {
+  'hair-loss': {
     name: "Hair Loss Treatment Study",
     organization: "Hair DAO",
     description: "Study for treatment efficacy in people with specific genetic markers",
@@ -34,8 +33,88 @@ export default function ExperimentDetails() {
     payment: 50,
     startDate: "2024-03-01",
     endDate: "2024-09-01",
-    status: 'active'
-  });
+    status: 'active',
+    chatId: "your-chat-id-here"
+  },
+  'running': {
+    name: "Running Performance Study",
+    organization: "Athlete Health Research",
+    description: "Study on the impact of running on cardiovascular health",
+    fullDescription: "This study aims to understand the relationship between running frequency and cardiovascular health outcomes. Participants will contribute their running data and regular health check-ups.",
+    participants: 200,
+    requiredData: ["Running Data", "Heart Rate Data", "Health Check-ups"],
+    payment: 70,
+    startDate: "2024-04-01",
+    endDate: "2024-10-01",
+    status: 'active',
+    chatId: "running-chat-id-here"
+  },
+  'sleep': {
+    name: "Sleep Quality Study",
+    organization: "Sleep Health Research",
+    description: "Study on the impact of sleep on cognitive function",
+    fullDescription: "This study aims to understand the relationship between sleep duration and cognitive function outcomes. Participants will contribute their sleep data and regular cognitive tests.",
+    participants: 180,
+    requiredData: ["Sleep Data", "Cognitive Test Scores", "Health Check-ups"],
+    payment: 60,
+    startDate: "2024-05-01",
+    endDate: "2024-11-01",
+    status: 'active',
+    chatId: "sleep-chat-id-here"
+  },
+  'mental-health': {
+    id: 'mental-health',
+    name: 'Mental Wellness Study',
+    organization: 'MindCare Research',
+    description: 'Impact of daily habits on mental well-being',
+    fullDescription: `This comprehensive mental wellness study examines the relationship between daily habits, lifestyle choices, and mental health outcomes. By collecting data on daily routines, stress levels, and emotional well-being, we aim to identify patterns that contribute to better mental health.
+
+The study utilizes advanced analytics to understand how different lifestyle factors interact with mental wellness, helping to develop personalized recommendations for maintaining optimal mental health.`,
+    icon: <FaBrain size={40} />,
+    requiredData: ['Daily Logs', 'Mood Tracking', 'Activity Data'],
+    participants: 175,
+    targetParticipants: 600,
+    payment: 65,
+    startDate: '2024-05-01',
+    endDate: '2024-11-01'
+  },
+  'nutrition': {
+    id: 'nutrition',
+    name: 'Personalized Nutrition Study',
+    organization: 'NutriGenetics',
+    description: 'Genetic influence on dietary needs and metabolism',
+    fullDescription: `This innovative nutrition study investigates how genetic variations affect individual dietary needs and metabolic responses. By analyzing genetic markers alongside detailed dietary logs and metabolic data, we aim to develop personalized nutrition recommendations.
+
+Participants will contribute to groundbreaking research while receiving insights about their own genetic predispositions to various nutritional factors and metabolism patterns.`,
+    icon: <FaAppleAlt size={40} />,
+    requiredData: ['DNA', 'Dietary Logs', 'Metabolic Data'],
+    participants: 300,
+    targetParticipants: 800,
+    payment: 70,
+    startDate: '2024-06-01',
+    endDate: '2024-12-01'
+  },
+  'fitness-tracking': {
+    id: 'fitness-tracking',
+    name: 'Smart Fitness Analysis',
+    organization: 'FitTech Research',
+    description: 'AI-powered personalized fitness optimization',
+    fullDescription: `Join our cutting-edge fitness study that uses AI to analyze and optimize personal fitness routines. This research combines wearable technology data with machine learning to understand individual response patterns to different types of exercise.
+
+The study aims to develop AI models that can predict optimal workout patterns and recovery needs based on individual physiological responses and fitness goals.`,
+    icon: <FaDumbbell size={40} />,
+    requiredData: ['Fitness Metrics', 'Heart Rate Data', 'Activity Logs'],
+    participants: 250,
+    targetParticipants: 700,
+    payment: 55,
+    startDate: '2024-07-01',
+    endDate: '2024-12-31',
+    stakingRequired: {
+      amount: 50,
+      duration: '2 months'
+    }
+  }
+}
 
 export default function ExperimentDetails() {
   const params = useParams();
