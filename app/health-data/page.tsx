@@ -23,126 +23,91 @@ export default function HealthData() {
     { 
       id: "dna", 
       name: "DNA Data", 
-      icon: <FaDna size={60} className="text-blue-600" />, 
+      icon: <FaDna size={60} className="text-[#2b7e21]" />, 
       shared: false,
       description: "Upload and share your genetic information securely"
     },
     { 
       id: "age", 
       name: "Age & Demographics", 
-      icon: <FaUserAlt size={60} className="text-blue-600" />, 
+      icon: <FaUserAlt size={60} className="text-[#2b7e21]" />, 
       shared: false,
       description: "Manage your demographic information"
     },
     { 
       id: "wearable", 
       name: "Wearable Data", 
-      icon: <MdWatch size={60} className="text-blue-600" />,
+      icon: <MdWatch size={60} className="text-[#2b7e21]" />,
       shared: false,
       description: "Connect and share data from your wearable devices"
     },
     { 
       id: "baseline_health", 
       name: "Baseline Health Data", 
-      icon: <FaHeartbeat size={60} className="text-blue-600" />,
+      icon: <FaHeartbeat size={60} className="text-[#2b7e21]" />,
       shared: false,
       description: "Manage your basic health metrics and lab results"
     },
     { 
-      id: "vaccine", 
-      name: "Vaccine Record", 
-      icon: <FaSyringe size={60} className="text-blue-600" />,
+      id: "medical_history", 
+      name: "Medical History", 
+      icon: <FaNotesMedical size={60} className="text-[#2b7e21]" />,
       shared: false,
-      description: "Manage and share your vaccination history and records"
+      description: "Share your medical conditions and treatments history"
     },
     { 
       id: "lifestyle", 
       name: "Lifestyle Data", 
-      icon: <FaLeaf size={60} className="text-blue-600" />,
+      icon: <FaLeaf size={60} className="text-[#2b7e21]" />,
       shared: false,
       description: "Track your dietary habits, sleep patterns, and mental wellness"
     },
   ]);
 
-  const [uploading, setUploading] = useState<string | null>(null);
-  const [sharing, setSharing] = useState<string | null>(null);
-
-  const handleUpload = async (dataType: string) => {
-    setUploading(dataType);
-    try {
-      // Simulate upload delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log(`Uploading ${dataType}`);
-    } catch (error) {
-      console.error(`Error uploading ${dataType}:`, error);
-    } finally {
-      setUploading(null);
-    }
-  };
-
-  const handleShare = async (dataType: string) => {
-    setSharing(dataType);
-    try {
-      // Simulate share delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log(`Sharing ${dataType}`);
-    } catch (error) {
-      console.error(`Error sharing ${dataType}:`, error);
-    } finally {
-      setSharing(null);
-    }
-  };
-
   if (isLoading) {
     return (
-      <div className="w-full min-h-screen bg-blue-600 flex items-center justify-center">
-        <div className="text-white text-xl">Loading...</div>
+      <div className="min-h-screen bg-[#f8f3ea] flex items-center justify-center">
+        <div className="text-xl">Loading...</div>
       </div>
     );
   }
 
   if (!isConnected) {
     return (
-      <div className="w-full min-h-screen bg-blue-600 flex items-center justify-center">
-        <div className="text-white text-xl">Please connect your wallet to view health data</div>
+      <div className="min-h-screen bg-[#f8f3ea] flex items-center justify-center">
+        <div className="text-xl">Please connect your wallet to view health data</div>
       </div>
     );
   }
 
   return (
-    <div className="w-full min-h-screen bg-blue-600">
+    <div className="min-h-screen bg-[#f8f3ea]">
       <Header />
-      <div className="pt-24 px-4 max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-white mb-8">My Health Data</h1>
+      <div className="container-wide pt-32 pb-20">
+        <div className="mb-12">
+          <h1 className="text-4xl font-medium mb-2">My Health Data</h1>
+          <p className="text-gray-600">Manage and share your health information securely</p>
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {healthData.map((data) => (
             <div 
               key={data.id} 
-              className="bg-white rounded-xl p-6 shadow-lg border-2 border-black hover:shadow-xl transition-shadow"
+              className="card hover:scale-[1.02]"
             >
-              <div className="flex flex-col items-center gap-4">
-                <div className="text-blue-600 mb-2">{data.icon}</div>
-                <h2 className="text-2xl font-bold text-center mb-2 text-blue-600">{data.name}</h2>
-                <p className="text-gray-600 text-center text-base">{data.description}</p>
+              <div className="flex flex-col gap-4">
+                <div className="p-3 bg-green-50 rounded-2xl w-fit">
+                  {data.icon}
+                </div>
+                <h2 className="text-2xl font-medium">{data.name}</h2>
+                <p className="text-gray-600">{data.description}</p>
                 
-                <div className="flex gap-4 mt-6">
-                  <button
-                    onClick={() => handleUpload(data.id)}
-                    disabled={uploading === data.id}
-                    className="flex items-center gap-2 bg-yellow-300 px-6 py-3 rounded-lg hover:bg-yellow-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-semibold"
-                  >
-                    <FaUpload /> 
-                    {uploading === data.id ? 'Uploading...' : 'Upload'}
+                <div className="flex gap-4 mt-2">
+                  <button className="btn-primary flex-1">
+                    <FaUpload className="mr-2" /> Upload
                   </button>
-                  
-                  <button
-                    onClick={() => handleShare(data.id)}
-                    disabled={sharing === data.id}
-                    className="flex items-center gap-2 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-semibold"
-                  >
-                    <FaShare /> 
-                    {sharing === data.id ? 'Sharing...' : 'Share'}
+                  <button className="btn-outline flex-1">
+                    <FaShare className="mr-2" /> Share
                   </button>
                 </div>
               </div>

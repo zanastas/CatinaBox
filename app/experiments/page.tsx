@@ -23,7 +23,7 @@ export default function Experiments() {
       name: "Hair Loss Treatment Study",
       organization: "Hair DAO",
       description: "Study for treatment efficacy in people with specific genetic markers",
-      icon: <FaDna size={40} />,
+      icon: <FaDna size={40} className="text-[#2b7e21]" />,
       requiredData: ["DNA", "Medical History"],
       participants: 150
     },
@@ -32,7 +32,7 @@ export default function Experiments() {
       name: "Stake & Run Challenge",
       organization: "Stake & Run DAO",
       description: "Fitness study correlating staking rewards with running performance",
-      icon: <FaRunning size={40} />,
+      icon: <FaRunning size={40} className="text-[#2b7e21]" />,
       requiredData: ["Wearable Data", "Fitness Metrics"],
       participants: 300
     },
@@ -41,20 +41,23 @@ export default function Experiments() {
       name: "Sleep Quality Research",
       organization: "Sleep Labs",
       description: "Research on sleep patterns and genetic predisposition",
-      icon: <FaMoon size={40} />,
+      icon: <FaMoon size={40} className="text-[#2b7e21]" />,
       requiredData: ["Sleep Data", "DNA", "Lifestyle Data"],
       participants: 200
     }
   ]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#f8f3ea]">
       <Header />
-      <div className="max-w-7xl mx-auto pt-24 pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Experiments</h1>
+      <div className="container-wide pt-32 pb-20">
+        <div className="flex justify-between items-center mb-12">
+          <div>
+            <h1 className="text-4xl font-medium mb-2">Experiments</h1>
+            <p className="text-gray-600">Join research studies and earn rewards</p>
+          </div>
           <Link href="/experiments/create">
-            <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
+            <button className="btn-primary">
               <FaPlus className="mr-2" /> Create Experiment
             </button>
           </Link>
@@ -63,30 +66,32 @@ export default function Experiments() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {experiments.map((experiment) => (
             <Link href={`/experiments/${experiment.id}`} key={experiment.id}>
-              <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-black hover:shadow-xl transition-shadow cursor-pointer">
+              <div className="card hover:scale-[1.02]">
                 <div className="flex flex-col gap-4">
                   <div className="flex items-center justify-between">
-                    <div className="text-blue-600">{experiment.icon}</div>
-                    <div className="flex items-center gap-2">
+                    <div className="p-3 bg-green-50 rounded-2xl">
+                      {experiment.icon}
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-600">
                       <FaUsers />
                       <span>{experiment.participants}</span>
                     </div>
                   </div>
                   
                   <div>
-                    <h2 className="text-xl font-semibold">{experiment.name}</h2>
+                    <h2 className="text-xl font-medium mb-1">{experiment.name}</h2>
                     <p className="text-sm text-gray-600">by {experiment.organization}</p>
                   </div>
                   
                   <p className="text-gray-600">{experiment.description}</p>
                   
-                  <div className="mt-4">
-                    <p className="text-sm font-semibold mb-2">Required Data:</p>
+                  <div>
+                    <p className="text-sm font-medium mb-2">Required Data:</p>
                     <div className="flex flex-wrap gap-2">
                       {experiment.requiredData.map((data) => (
                         <span 
                           key={data}
-                          className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded"
+                          className="status-badge"
                         >
                           {data}
                         </span>
