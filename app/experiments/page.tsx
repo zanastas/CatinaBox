@@ -3,7 +3,7 @@
 import Header from "@components/header";
 import Footer from "@components/footer";
 import { useState } from "react";
-import { FaUsers, FaDna, FaRunning, FaMoon } from "react-icons/fa";
+import { FaUsers, FaDna, FaRunning, FaMoon, FaPlus } from "react-icons/fa";
 import Link from "next/link";
 
 interface ExperimentType {
@@ -48,14 +48,16 @@ export default function Experiments() {
   ]);
 
   return (
-    <div className="w-full min-h-screen bg-blue-600">
+    <div className="min-h-screen bg-gray-50">
       <Header />
-      <div className="pt-24 px-4 max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto pt-24 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-white">Ongoing Experiments</h1>
-          <button className="bg-yellow-300 text-black px-6 py-3 rounded-xl border-2 border-black hover:bg-yellow-400 transition-colors">
-            Create Experiment
-          </button>
+          <h1 className="text-3xl font-bold text-gray-900">Experiments</h1>
+          <Link href="/experiments/create">
+            <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
+              <FaPlus className="mr-2" /> Create Experiment
+            </button>
+          </Link>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
