@@ -19,15 +19,20 @@ export default function ExperimentChat({ experimentId, chatId }: ExperimentChatP
 
   useEffect(() => {
     const initPush = async () => {
-      if (primaryWallet?.connector) {
-        const provider = new ethers.providers.Web3Provider(primaryWallet.connector as any);
-        const signer = provider.getSigner();
-        const user = await initializePushUser(signer);
-        setPushUser(user);
-        
-        // Subscribe to messages
-        const history = await user.chat.group.getMessages(chatId);
-        setMessages(history);
+      if (primaryWallet?.provider) {
+        try {
+          // Create Web3Provider using the provider from Dynamic
+          const web3Provider = new ethers.providers.Web3Provider(primaryWallet.provider);
+          const signer = web3Provider.getSigner();
+          const user = await initializePushUser(signer);
+          setPushUser(user);
+          
+          // Get chat history
+          const history = await user.chat.history(chatId);
+          setMessages(history || []);
+        } catch (error) {
+          console.error('Failed to initialize Push:', error);
+        }
       }
     };
 
@@ -42,8 +47,8 @@ export default function ExperimentChat({ experimentId, chatId }: ExperimentChatP
       await sendChatMessage(pushUser, chatId, newMessage);
       setNewMessage('');
       // Refresh messages
-      const history = await pushUser.chat.group.getMessages(chatId);
-      setMessages(history);
+      const history = await pushUser.chat.history(chatId);
+      setMessages(history || []);
     } catch (error) {
       console.error('Error sending message:', error);
     }
