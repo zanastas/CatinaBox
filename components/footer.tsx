@@ -1,49 +1,63 @@
-import Image from "next/image";
+import Link from 'next/link';
+import Image from 'next/image';
+import { FaTwitter, FaDiscord, FaGithub } from 'react-icons/fa';
 
 export default function Footer() {
   return (
-    <div className="bottom-0 w-full bg-blue-600 flex items-center flex-col lg:flex-row lg:justify-between gap-4 px-4">
-      <div className="flex flex-row gap-8 items-center justify-center mb-4">
-        <a
-          className="text-black items-center inline-flex bg-white border-2 border-black duration-200 ease-in-out focus:outline-none hover:bg-black hover:shadow-none hover:text-white justify-center rounded-full shadow-[5px_5px_black] text-center transform transition w-full px-2 py-2"
-          href="https://x.com/FILBuilders"
-        >
-          <Image
-            src="/assets/logos/x-logo.png"
-            width={30}
-            height={30}
-            alt="X Logo"
-          />
-        </a>
+    <footer className="border-t border-gray-200 bg-white">
+      <div className="container-wide py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="col-span-1">
+            <Link href="/">
+              <div className="flex items-center gap-3">
+                <Image
+                  src="/assets/logos/fil-b-mini-logo.png"
+                  alt="Logo"
+                  width={32}
+                  height={32}
+                />
+                <span className="text-xl font-medium">Stake & Run</span>
+              </div>
+            </Link>
+            <p className="mt-4 text-gray-600 text-sm">
+              Secure health data sharing platform for research and innovation
+            </p>
+          </div>
 
-        <a
-          className="text-black items-center inline-flex bg-white border-2 border-black duration-200 ease-in-out focus:outline-none hover:bg-black hover:shadow-none hover:text-white justify-center rounded-full shadow-[5px_5px_black] text-center transform transition w-full px-2 py-2"
-          href="https://discord.com/invite/filecoin"
-        >
-          <Image
-            src="/assets/logos/discord-logo.png"
-            width={30}
-            height={30}
-            alt="Discord Logo"
-          />
-        </a>
+          <div>
+            <h3 className="font-medium mb-4">Platform</h3>
+            <ul className="space-y-3">
+              <li><Link href="/health-data" className="nav-link">Data Safe</Link></li>
+              <li><Link href="/experiments" className="nav-link">Experiments</Link></li>
+              <li><Link href="/docs" className="nav-link">Documentation</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-medium mb-4">Resources</h3>
+            <ul className="space-y-3">
+              <li><Link href="/about" className="nav-link">About</Link></li>
+              <li><Link href="/privacy" className="nav-link">Privacy Policy</Link></li>
+              <li><Link href="/terms" className="nav-link">Terms of Service</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-medium mb-4">Community</h3>
+            <div className="flex gap-4">
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="nav-link">
+                <FaTwitter size={20} />
+              </a>
+              <a href="https://discord.com" target="_blank" rel="noopener noreferrer" className="nav-link">
+                <FaDiscord size={20} />
+              </a>
+              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="nav-link">
+                <FaGithub size={20} />
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
-      <div className="flex flex-row gap-2 justify-center items-center mb-2">
-        <p className="inline-block text-white">
-
-          Made with
-        </p>
-        <Image
-          src="/assets/icons/heart.png"
-          width={30}
-          height={30}
-          alt="Heart Icon"
-        />
-        <p className="inline-block text-white">
-
-          by CatinaBox
-        </p>
-      </div>
-    </div>
+    </footer>
   );
 }

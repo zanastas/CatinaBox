@@ -3,7 +3,7 @@
 import Header from "@components/header";
 import Footer from "@components/footer";
 import { useState } from "react";
-import { FaDna, FaUserAlt, FaShare, FaUpload, FaStopwatch, FaRunning, FaSyringe } from "react-icons/fa";
+import { FaDna, FaUserAlt, FaShare, FaUpload, FaHeartbeat, FaRunning, FaSyringe, FaNotesMedical, FaLeaf } from "react-icons/fa";
 import { MdWatch } from "react-icons/md";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 
@@ -32,7 +32,7 @@ export default function HealthData() {
       name: "Age & Demographics", 
       icon: <FaUserAlt size={60} className="text-blue-600" />, 
       shared: false,
-      description: "Manage your demographic and personal health information"
+      description: "Manage your demographic information"
     },
     { 
       id: "wearable", 
@@ -42,11 +42,25 @@ export default function HealthData() {
       description: "Connect and share data from your wearable devices"
     },
     { 
+      id: "baseline_health", 
+      name: "Baseline Health Data", 
+      icon: <FaHeartbeat size={60} className="text-blue-600" />,
+      shared: false,
+      description: "Manage your basic health metrics and lab results"
+    },
+    { 
       id: "vaccine", 
       name: "Vaccine Record", 
       icon: <FaSyringe size={60} className="text-blue-600" />,
       shared: false,
       description: "Manage and share your vaccination history and records"
+    },
+    { 
+      id: "lifestyle", 
+      name: "Lifestyle Data", 
+      icon: <FaLeaf size={60} className="text-blue-600" />,
+      shared: false,
+      description: "Track your dietary habits, sleep patterns, and mental wellness"
     },
   ]);
 
