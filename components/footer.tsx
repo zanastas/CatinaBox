@@ -41,7 +41,7 @@ export default function Footer() {
         />
         <p className="inline-block text-white">
 
-          by Team FIL-B
+          by CatinaBox
         </p>
       </div>
     </div>

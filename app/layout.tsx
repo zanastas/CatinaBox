@@ -1,15 +1,15 @@
-
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@styles/globals.css";
 import { ContextProvider } from '.';
 import ReactQueryProvider from './ReactQueryProvider';
+
 const inter = Inter({ subsets: ["latin"] });
 
 // Websit Config
 export const metadata: Metadata = {
   title: "FVM Frontend Starter Kit",
-  description: "Made with love by Team FIL-B",
+  description: "Made with love by CatinaBox",
 };
 
 export default function RootLayout({
