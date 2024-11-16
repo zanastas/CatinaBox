@@ -1,4 +1,7 @@
-Cat In A Box  is a DeSci and SocialFi platform empowering anyone to participate in community science and decentralized experiments. It incentivizes users to share private health data securely and engage in citizen science projects tailored to their interests. Built at ETHGlobal Bangkok, Nov 2024.
+Cat In A Box  is a DeSci and SocialFi platform empowering anyone to participate in community science and decentralized experiments. It 
+incentivizes users to share private health data securely and engage in citizen science projects tailored to their interests. Built at ETHGlobal Bangkok, Nov 2024.
+
+![cat-in-box](https://github.com/user-attachments/assets/83f2ad7a-ad0e-43c1-a9b6-50d8da665810)
 
 #### Problem: 
 Scientific discoveries take too long to reach practical use for the average users, especially for those seeking personalized health solutions. Most insights are limited to scientists or biohackers, often inaccessible or irrelevant to everyday users. Public participation in scientific studies is low due to a lack of incentives, understanding, and engaging social features, leading to a shortage of diverse, high-quality data for innovation.
