@@ -7,8 +7,12 @@ import { FaUsers, FaDna, FaCalendar, FaCoins, FaLock, FaCheck, FaBrain, FaAppleA
 import ReactMarkdown from 'react-markdown';
 import type { JSX } from 'react';
 import Link from 'next/link';
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import { isEthereumWallet } from "@dynamic-labs/ethereum";
+import { CatinaBoxABI } from '../../constants/contracts';
 
 interface ExperimentData {
+  index: number;
   name: string;
   organization: string;
   description: string;
@@ -30,6 +34,7 @@ interface ExperimentData {
 
 const experiments: Record<string, ExperimentData> = {
   'hair-loss': {
+    index: 0,
     name: "DNA-Driven Hair Care Experiment",
     organization: "HairDAO",
     description: "Crack the Code. Save the Strand.",
@@ -111,7 +116,7 @@ Use your shampoo daily and log hair loss (number of hairs) in the platform.
     chatId: "sleep-chat-id-here"
   },
   'mental-health': {
-    id: 'mental-health',
+    index: 1,
     name: 'Mental Wellness Study',
     organization: 'MindCare Research',
     description: 'Impact of daily habits on mental well-being',
@@ -127,7 +132,7 @@ The study utilizes advanced analytics to understand how different lifestyle fact
     endDate: '2024-11-30'
   },
   'nutrition': {
-    id: 'nutrition',
+    index: 2,
     name: 'Personalized Nutrition Study',
     organization: 'NutriGenetics',
     description: 'Genetic influence on dietary needs and metabolism',
@@ -143,7 +148,7 @@ Participants will contribute to groundbreaking research while receiving insights
     endDate: '2024-11-30'
   },
   'fitness-tracking': {
-    id: 'fitness-tracking',
+    index: 3,
     name: 'Smart Fitness Analysis',
     organization: 'FitTech Research',
     description: 'AI-powered personalized fitness optimization',
@@ -165,6 +170,10 @@ The study aims to develop AI models that can predict optimal workout patterns an
 }
 
 const ExperimentDetails = ({ experiment }: { experiment: ExperimentData }) => {
+  const { primaryWallet } = useDynamicContext();
+  const [txnHash, setTxnHash] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
   const getStatusBadge = (status: string) => {
     const statusMap: Record<string, { color: string; text: string }> = {
       active: { color: 'bg-green-100 text-green-800', text: 'Active' },
@@ -179,6 +188,45 @@ const ExperimentDetails = ({ experiment }: { experiment: ExperimentData }) => {
         {statusInfo.text}
       </span>
     );
+  };
+
+  const handleJoinExperiment = async () => {
+    if (!primaryWallet || !isEthereumWallet(primaryWallet)) {
+      alert("Please connect your wallet first");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const walletClient = await primaryWallet.getWalletClient();
+      const publicClient = await primaryWallet.getPublicClient();
+
+      const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
+
+      const transaction = {
+        address: contractAddress as `0x${string}`,
+        abi: CatinaBoxABI,
+        functionName: 'initiateDataSharing',
+        args: [
+          0,
+          "bafybeieroo27zktvpsw6zn3exqwz23tgckqkkic3xp67dxzoqoy3v7oob4",
+          true
+        ],
+      };
+
+      const hash = await walletClient.writeContract(transaction);
+      setTxnHash(hash);
+
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+      console.log("Transaction completed:", receipt);
+
+      window.location.href = "/experiments/join-success";
+    } catch (error) {
+      console.error("Transaction failed:", error);
+      alert("Failed to join experiment. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -256,12 +304,19 @@ const ExperimentDetails = ({ experiment }: { experiment: ExperimentData }) => {
               <p className="text-gray-600 mb-6">
                 Share your data securely and earn rewards for contributing to research.
               </p>
-              <Link href="/experiments/join-success">
-                <button className="flex items-center justify-center w-full px-4 py-3 bg-[#2b7e21] hover:bg-[#236b1a] text-white rounded-xl transition-colors">
-                  <FaLock className="mr-2" /> 
-                  <span>Join Securely</span>
-                </button>
-              </Link>
+              <button
+                onClick={handleJoinExperiment}
+                disabled={isLoading}
+                className="flex items-center justify-center w-full px-4 py-3 bg-[#2b7e21] hover:bg-[#236b1a] text-white rounded-xl transition-colors disabled:bg-gray-400"
+              >
+                <FaLock className="mr-2" />
+                <span>{isLoading ? "Processing..." : "Join Securely"}</span>
+              </button>
+              {txnHash && (
+                <p className="mt-4 text-sm text-gray-600">
+                  Transaction: {txnHash.slice(0, 6)}...{txnHash.slice(-4)}
+                </p>
+              )}
             </div>
 
             <div className="card">
@@ -303,7 +358,7 @@ export default async function ExperimentPage({ params }: { params: { id: string 
   }
 
   const experimentData: ExperimentData = {
-    id: params.id,
+    index: experiment.index,
     name: experiment.name,
     organization: experiment.organization,
     description: experiment.description,
