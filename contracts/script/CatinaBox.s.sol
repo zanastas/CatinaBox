@@ -8,13 +8,18 @@ contract CatinaBoxScript is Script {
     function setUp() public {}
 
     function run() public {
-        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-        address initialTEE = vm.envAddress("INITIAL_TEE_ADDRESS");
+        // Get optional TEE address from environment
+        address initialTEE = vm.envOr("INITIAL_TEE_ADDRESS", address(0));
 
-        vm.startBroadcast(deployerPrivateKey);
+        // Start broadcast (private key will be provided by keystore)
+        vm.startBroadcast();
 
         // Deploy CatinaBox
         CatinaBox catinaBox = new CatinaBox();
+
+        console.log("CatinaBox deployed at:", address(catinaBox));
+        console.log("Owner:", catinaBox.owner());
+        console.log("msg.sender:", msg.sender);
 
         // Set initial TEE if provided
         if (initialTEE != address(0)) {
@@ -22,11 +27,5 @@ contract CatinaBoxScript is Script {
         }
 
         vm.stopBroadcast();
-
-        console.log("CatinaBox deployed at:", address(catinaBox));
-        console.log("Owner:", catinaBox.owner());
-        if (initialTEE != address(0)) {
-            console.log("Initial TEE set:", initialTEE);
-        }
     }
 }
