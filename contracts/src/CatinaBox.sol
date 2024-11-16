@@ -12,6 +12,7 @@ contract CatinaBox is Ownable {
     error AlreadyValidated();
     error AlreadyPaid();
     error NotExperimentOwner();
+    error ExperimentExpired();
 
     struct Experiment {
         address owner;
@@ -19,6 +20,7 @@ contract CatinaBox is Ownable {
         uint256 reward;
         bool active;
         ERC20 paymentToken;
+        uint64 endDate;
     }
 
     struct DataShare {
@@ -37,7 +39,8 @@ contract CatinaBox is Ownable {
         address indexed owner,
         string requestedDataSpec,
         uint256 reward,
-        address paymentToken
+        address paymentToken,
+        uint64 endDate
     );
     event DataShareInitiated(uint256 indexed experimentId, address indexed sharer, string dataCid, bool isFullAccess);
     event DataShareFinalized(
@@ -62,7 +65,7 @@ contract CatinaBox is Ownable {
         isTrustedTEE[tee] = trusted;
     }
 
-    function createExperiment(string calldata requestedDataSpec, uint256 reward, address paymentToken)
+    function createExperiment(string calldata requestedDataSpec, uint256 reward, address paymentToken, uint64 endDate)
         external
         returns (uint256)
     {
@@ -73,10 +76,11 @@ contract CatinaBox is Ownable {
             requestedDataSpec: requestedDataSpec,
             reward: reward,
             active: true,
-            paymentToken: ERC20(paymentToken)
+            paymentToken: ERC20(paymentToken),
+            endDate: endDate
         });
 
-        emit ExperimentCreated(experimentId, msg.sender, requestedDataSpec, reward, paymentToken);
+        emit ExperimentCreated(experimentId, msg.sender, requestedDataSpec, reward, paymentToken, endDate);
         return experimentId;
     }
 
@@ -84,7 +88,9 @@ contract CatinaBox is Ownable {
         external
         experimentExists(experimentId)
     {
-        if (!experiments[experimentId].active) revert ExperimentNotActive();
+        Experiment storage experiment = experiments[experimentId];
+        if (!experiment.active) revert ExperimentNotActive();
+        if (experiment.endDate != 0 && block.timestamp > experiment.endDate) revert ExperimentExpired();
 
         experimentDataShares[experimentId][dataCid] =
             DataShare({isFullAccess: isFullAccess, validated: false, paid: false});
@@ -135,7 +141,14 @@ contract CatinaBox is Ownable {
         external
         view
         experimentExists(experimentId)
-        returns (address owner, string memory requestedDataSpec, uint256 reward, bool active, address paymentToken)
+        returns (
+            address owner,
+            string memory requestedDataSpec,
+            uint256 reward,
+            bool active,
+            address paymentToken,
+            uint64 endDate
+        )
     {
         Experiment storage experiment = experiments[experimentId];
         return (
@@ -143,7 +156,8 @@ contract CatinaBox is Ownable {
             experiment.requestedDataSpec,
             experiment.reward,
             experiment.active,
-            address(experiment.paymentToken)
+            address(experiment.paymentToken),
+            experiment.endDate
         );
     }
 }
