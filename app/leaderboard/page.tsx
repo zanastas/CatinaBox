@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 
 interface UserLeaderboardEntry {
   username: string
@@ -17,9 +18,18 @@ interface CommunityLeaderboardEntry {
   totalUSDCDistributed: number
 }
 
+interface ScientistLeaderboardEntry {
+  username: string
+  community: string
+  papersPublished: number
+  experimentsRun: number
+  reputationScore: number
+}
+
 export default function LeaderboardPage() {
   const [userLeaderboard, setUserLeaderboard] = useState<UserLeaderboardEntry[]>([])
   const [communityLeaderboard, setCommunityLeaderboard] = useState<CommunityLeaderboardEntry[]>([])
+  const [scientistLeaderboard, setScientistLeaderboard] = useState<ScientistLeaderboardEntry[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -51,8 +61,23 @@ export default function LeaderboardPage() {
           { name: "Mushroom Lovers", experimentsCount: 15, userCount: 300, scientistCount: 4, totalUSDCDistributed: 8000 }
         ]
 
+        // Mock data for scientists
+        const mockScientistData: ScientistLeaderboardEntry[] = [
+          { username: "Dr_Quantum_Brain", community: "Sleep Labs", papersPublished: 15, experimentsRun: 42, reputationScore: 98 },
+          { username: "BioHacker42", community: "Biohacker Guild", papersPublished: 12, experimentsRun: 38, reputationScore: 95 },
+          { username: "CryoMaster", community: "CryoDAO", papersPublished: 10, experimentsRun: 35, reputationScore: 92 },
+          { username: "anon_scientist_x", community: "VitaminDAO", papersPublished: 9, experimentsRun: 32, reputationScore: 90 },
+          { username: "MushRoom_PhD", community: "Mushroom Lovers", papersPublished: 8, experimentsRun: 30, reputationScore: 88 },
+          { username: "NeuroPunk2077", community: "Sleep Labs", papersPublished: 7, experimentsRun: 28, reputationScore: 85 },
+          { username: "DataAlchemist", community: "HairDAO", papersPublished: 6, experimentsRun: 25, reputationScore: 82 },
+          { username: "0xResearcher", community: "Longevity Hackers", papersPublished: 5, experimentsRun: 22, reputationScore: 80 },
+          { username: "ChaosTheory_Doc", community: "Stake & Run Community", papersPublished: 4, experimentsRun: 20, reputationScore: 78 },
+          { username: "anonymous_genius", community: "VitaminDAO", papersPublished: 3, experimentsRun: 18, reputationScore: 75 }
+        ]
+
         setUserLeaderboard(mockUserData)
         setCommunityLeaderboard(mockCommunityData)
+        setScientistLeaderboard(mockScientistData)
         setIsLoading(false)
       } catch (error) {
         console.error('Error fetching leaderboard data:', error)
@@ -72,10 +97,19 @@ export default function LeaderboardPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-16">
-      {/* User Leaderboard */}
+    <div className="container mx-auto px-4 py-16 mt-20">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">Individual Contributors 👤</h1>
+        {/* User Leaderboard */}
+        <h1 className="text-3xl font-bold mb-8 flex items-center gap-2 pt-4">
+          Individual Contributors
+          <Image 
+            src="/zurcuit_cat.png"
+            alt="Contributors Icon"
+            width={32}
+            height={32}
+            className="inline-block"
+          />
+        </h1>
         <div className="bg-white rounded-lg shadow overflow-hidden mb-16">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -124,6 +158,44 @@ export default function LeaderboardPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{entry.userCount}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{entry.scientistCount}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${entry.totalUSDCDistributed.toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Scientists Leaderboard */}
+        <h1 className="text-3xl font-bold mb-8">Leading Scientists 🧪</h1>
+        <div className="bg-white rounded-lg shadow overflow-hidden mb-16">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rank</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Scientist</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Community</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Papers</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Experiments</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reputation</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {scientistLeaderboard.map((entry, index) => (
+                <tr key={entry.username} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{index + 1}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{entry.username}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{entry.community}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{entry.papersPublished}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{entry.experimentsRun}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <div className="flex items-center">
+                      <span className={`inline-block w-2 h-2 rounded-full mr-2 ${
+                        entry.reputationScore >= 90 ? 'bg-green-500' :
+                        entry.reputationScore >= 80 ? 'bg-blue-500' :
+                        'bg-gray-500'
+                      }`}></span>
+                      {entry.reputationScore}
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
