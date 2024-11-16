@@ -33,12 +33,14 @@ async function processData(dataCid: string): Promise<{ valid: boolean, processed
 
         // Get file encryption key
         const signedMessage = await signAuthMessage(publicKey, process.env.PRIVATE_KEY!);
+        console.log('publicKey', publicKey);
+        console.log('signedMessage', signedMessage);
         const fileEncryptionKey = await lighthouse.fetchEncryptionKey(
             dataCid,
             publicKey,
             signedMessage
         );
-
+        console.log(fileEncryptionKey);
         if (!fileEncryptionKey.data.key) {
             throw new Error('Failed to get encryption key');
         }
@@ -60,10 +62,12 @@ async function processData(dataCid: string): Promise<{ valid: boolean, processed
         // Create temp file with first line
         const tempFile = 'temp.txt';
         fs.writeFileSync(tempFile, firstLine);
+        console.log('Wrote to temp file:', tempFile);
 
         // Get message signature for encryption
         const message = "Signing message for Lighthouse";
         const encryptionSignedMessage = await wallet.signMessage(message);
+        console.log("encryptionSignedMessage", encryptionSignedMessage);
 
         // Upload the new file encrypted
         const uploadResponse = await lighthouse.uploadEncrypted(
@@ -72,6 +76,7 @@ async function processData(dataCid: string): Promise<{ valid: boolean, processed
             publicKey,
             encryptionSignedMessage
         );
+        console.log('uploadResponse', uploadResponse);
 
         // Clean up temp file
         fs.unlinkSync(tempFile);
