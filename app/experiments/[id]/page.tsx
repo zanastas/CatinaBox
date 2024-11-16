@@ -4,19 +4,19 @@ import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Header from '@components/header';
 import Footer from '@components/footer';
-import { FaUsers, FaDna, FaCalendar, FaCoins, FaLock, FaCheck } from 'react-icons/fa';
+import { FaUsers, FaDna, FaCalendar, FaCoins, FaLock, FaCheck, FaBrain, FaAppleAlt, FaDumbbell } from 'react-icons/fa';
 
-interface ExperimentDetails {
+interface Experiment {
+  id: string;
   name: string;
   organization: string;
-  description: string;
+  status: 'active' | 'completed' | 'upcoming';
   fullDescription: string;
   participants: number;
-  requiredData: string[];
   payment: number;
   startDate: string;
   endDate: string;
-  status: 'active' | 'completed' | 'upcoming';
+  requiredData: string[];
 }
 
 const experiments = {
@@ -113,16 +113,19 @@ The study aims to develop AI models that can predict optimal workout patterns an
   }
 }
 
+const ExperimentDetails = ({ experiment }: { experiment: Experiment }) => {
   const getStatusBadge = (status: string) => {
-    const styles = {
-      active: "bg-green-100 text-green-800",
-      completed: "bg-gray-100 text-gray-800",
-      upcoming: "bg-blue-100 text-blue-800"
-    }[status];
+    const statusMap: Record<string, { color: string; text: string }> = {
+      active: { color: 'bg-green-100 text-green-800', text: 'Active' },
+      completed: { color: 'bg-gray-100 text-gray-800', text: 'Completed' },
+      upcoming: { color: 'bg-blue-100 text-blue-800', text: 'Upcoming' },
+    };
+
+    const statusInfo = statusMap[status.toLowerCase()] || statusMap.active;
 
     return (
-      <span className={`status-badge ${styles}`}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
+      <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusInfo.color}`}>
+        {statusInfo.text}
       </span>
     );
   };
@@ -142,7 +145,7 @@ The study aims to develop AI models that can predict optimal workout patterns an
                 </div>
                 {getStatusBadge(experiment.status)}
               </div>
-              
+
               <p className="text-gray-600 mb-6">
                 {experiment.fullDescription}
               </p>
@@ -185,7 +188,7 @@ The study aims to develop AI models that can predict optimal workout patterns an
             <div className="card">
               <h2 className="text-xl font-medium mb-4">Required Data</h2>
               <div className="space-y-3">
-                {experiment.requiredData.map((data) => (
+                {experiment.requiredData.map((data: string) => (
                   <div key={data} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
                     <FaCheck className="text-[#2b7e21]" />
                     <span>{data}</span>
@@ -230,4 +233,38 @@ The study aims to develop AI models that can predict optimal workout patterns an
       <Footer />
     </div>
   );
+};
+
+export default async function ExperimentPage({ params }: { params: { id: string } }) {
+  // Get the experiment data from our experiments object
+  const experiment = experiments[params.id as keyof typeof experiments];
+
+  // If experiment doesn't exist, you might want to handle that case
+  if (!experiment) {
+    // You could redirect to 404 or show an error message
+    return (
+      <div className="min-h-screen bg-[#f8f3ea] flex items-center justify-center">
+        <div className="card p-8">
+          <h1 className="text-2xl font-medium mb-2">Experiment not found</h1>
+          <p className="text-gray-600">The experiment you're looking for doesn't exist.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Convert the experiment data to match the Experiment interface
+  const experimentData: Experiment = {
+    id: params.id,
+    name: experiment.name,
+    organization: experiment.organization,
+    status: experiment.status || 'active', // Provide a default if status is missing
+    fullDescription: experiment.fullDescription,
+    participants: experiment.participants,
+    payment: experiment.payment,
+    startDate: experiment.startDate,
+    endDate: experiment.endDate,
+    requiredData: experiment.requiredData,
+  };
+
+  return <ExperimentDetails experiment={experimentData} />;
 } 
