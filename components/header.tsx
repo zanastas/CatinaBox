@@ -32,6 +32,10 @@ const Header = () => {
             <Link href="/docs" className="nav-link">
               Docs
             </Link>
+            <Link href="/leaderboard" className="nav-link flex items-center gap-1">
+              Leaderboard
+              <span className="text-lg">🏆</span>
+            </Link>
           </div>
 
           <div className="flex items-center gap-4">

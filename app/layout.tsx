@@ -1,30 +1,34 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "@styles/globals.css";
-import { ContextProvider } from '.';
-import ReactQueryProvider from './ReactQueryProvider';
+import "./globals.css";
+import Header from "@/components/header";
+import Footer from "@/components/footer";
+import Providers from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
-// Websit Config
 export const metadata: Metadata = {
-  title: "FVM Frontend Starter Kit",
-  description: "Made with love by CatinaBox",
+  title: "CatinaBox",
+  description: "Secure health data sharing platform for research and innovation",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ReactQueryProvider>
-          <ContextProvider>
-            {children}
-          </ContextProvider>
-        </ReactQueryProvider>
+        <Providers>
+          <div className="flex flex-col min-h-screen">
+            <Header />
+            <main className="flex-grow">
+              {children}
+            </main>
+            <Footer />
+          </div>
+        </Providers>
       </body>
     </html>
   );
