@@ -6,6 +6,7 @@ import Header from '@components/header';
 import { FaUsers, FaDna, FaCalendar, FaCoins, FaLock, FaCheck, FaBrain, FaAppleAlt, FaDumbbell } from 'react-icons/fa';
 import ReactMarkdown from 'react-markdown';
 import type { JSX } from 'react';
+import Link from 'next/link';
 
 interface ExperimentData {
   name: string;
@@ -255,10 +256,12 @@ const ExperimentDetails = ({ experiment }: { experiment: ExperimentData }) => {
               <p className="text-gray-600 mb-6">
                 Share your data securely and earn rewards for contributing to research.
               </p>
-              <button className="flex items-center justify-center w-full px-4 py-3 bg-[#2b7e21] hover:bg-[#236b1a] text-white rounded-xl transition-colors">
-                <FaLock className="mr-2" /> 
-                <span>Join Securely</span>
-              </button>
+              <Link href="/experiments/join-success">
+                <button className="flex items-center justify-center w-full px-4 py-3 bg-[#2b7e21] hover:bg-[#236b1a] text-white rounded-xl transition-colors">
+                  <FaLock className="mr-2" /> 
+                  <span>Join Securely</span>
+                </button>
+              </Link>
             </div>
 
             <div className="card">
