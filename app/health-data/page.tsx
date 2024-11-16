@@ -1,7 +1,6 @@
 "use client";
 
 import Header from "@components/header";
-import Footer from "@components/footer";
 import { useState } from "react";
 import { FaDna, FaUserAlt, FaShare, FaUpload, FaHeartbeat, FaRunning, FaSyringe, FaNotesMedical, FaLeaf } from "react-icons/fa";
 import { MdWatch } from "react-icons/md";
@@ -89,25 +88,29 @@ export default function HealthData() {
           <p className="text-gray-600">Manage and share your health information securely</p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {healthData.map((data) => (
             <div 
               key={data.id} 
-              className="card hover:scale-[1.02]"
+              className="bg-white rounded-2xl p-6 border border-gray-200 hover:border-[#2b7e21] transition-all duration-200 hover:shadow-lg"
             >
-              <div className="flex flex-col gap-4">
-                <div className="p-3 bg-green-50 rounded-2xl w-fit">
+              <div className="flex flex-col gap-6">
+                <div className="p-4 bg-[#ebf7eb] rounded-2xl w-fit">
                   {data.icon}
                 </div>
-                <h2 className="text-2xl font-medium">{data.name}</h2>
-                <p className="text-gray-600">{data.description}</p>
+                <div>
+                  <h2 className="text-2xl font-medium mb-2">{data.name}</h2>
+                  <p className="text-gray-600 mb-6">{data.description}</p>
+                </div>
                 
-                <div className="flex gap-4 mt-2">
-                  <button className="btn-primary flex-1">
-                    <FaUpload className="mr-2" /> Upload
+                <div className="flex gap-4">
+                  <button className="flex items-center justify-center gap-2 flex-1 px-4 py-3 bg-[#2b7e21] hover:bg-[#236b1a] text-white rounded-xl transition-colors">
+                    <FaUpload /> 
+                    <span>Upload</span>
                   </button>
-                  <button className="btn-outline flex-1">
-                    <FaShare className="mr-2" /> Share
+                  <button className="flex items-center justify-center gap-2 flex-1 px-4 py-3 border border-gray-200 hover:border-[#2b7e21] hover:text-[#2b7e21] rounded-xl transition-colors">
+                    <FaShare /> 
+                    <span>Share</span>
                   </button>
                 </div>
               </div>
@@ -115,7 +118,6 @@ export default function HealthData() {
           ))}
         </div>
       </div>
-      <Footer />
     </div>
   );
 }

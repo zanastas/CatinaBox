@@ -1,7 +1,6 @@
 "use client";
 
 import Header from "@components/header";
-import Footer from "@components/footer";
 import { useState } from "react";
 import { FaUsers, FaDna, FaRunning, FaMoon, FaPlus } from "react-icons/fa";
 import Link from "next/link";
@@ -107,7 +106,6 @@ export default function Experiments() {
           ))}
         </div>
       </div>
-      <Footer />
     </div>
   );
 } 

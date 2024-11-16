@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Header from '@components/header';
-import Footer from '@components/footer';
 import { FaUsers, FaDna, FaCalendar, FaCoins, FaLock, FaCheck, FaBrain, FaAppleAlt, FaDumbbell } from 'react-icons/fa';
 import ReactMarkdown from 'react-markdown';
 import type { JSX } from 'react';
@@ -282,7 +281,6 @@ const ExperimentDetails = ({ experiment }: { experiment: ExperimentData }) => {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };
