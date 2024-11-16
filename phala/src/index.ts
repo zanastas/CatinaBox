@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import lighthouse from '@lighthouse-web3/sdk';
+import kavach from "@lighthouse-web3/kavach";
 import * as fs from 'fs';
 import dotenv from 'dotenv';
 
@@ -11,18 +12,20 @@ const CONTRACT_ABI = [
     "function finalizeDataSharing(uint256 experimentId, string calldata originalCid, string calldata processedCid, address sharer, bool valid, bool accepted)"
 ];
 
-async function signAuthMessage(publicKey: string, privateKey: string): Promise<string> {
-    const provider = new ethers.JsonRpcProvider();
-    const signer = new ethers.Wallet(privateKey, provider);
-    const authMessage = await lighthouse.getAuthMessage(publicKey);
-    const messageRequested = authMessage.data.message;
-
-    if (!messageRequested) {
+async function signAuthMessage(privateKey: string): Promise<string> {
+    const signer = new ethers.Wallet(privateKey);
+    const authMessage = await kavach.getAuthMessage(signer.address);
+    if (!authMessage.message) {
         throw new Error('Failed to get auth message');
     }
+    const signedMessage = await signer.signMessage(authMessage.message);
+    const { JWT, error } = await kavach.getJWT(signer.address, signedMessage);
 
-    const signedMessage = await signer.signMessage(messageRequested);
-    return signedMessage;
+    if (error || !JWT) {
+        throw new Error('Failed to get JWT token');
+    }
+
+    return JWT;
 }
 
 async function processData(dataCid: string): Promise<{ valid: boolean, processedCid: string | null }> {
@@ -32,9 +35,7 @@ async function processData(dataCid: string): Promise<{ valid: boolean, processed
         const publicKey = wallet.address;
 
         // Get file encryption key
-        const signedMessage = await signAuthMessage(publicKey, process.env.PRIVATE_KEY!);
-        console.log('publicKey', publicKey);
-        console.log('signedMessage', signedMessage);
+        const signedMessage = await signAuthMessage(process.env.PRIVATE_KEY!);
         const fileEncryptionKey = await lighthouse.fetchEncryptionKey(
             dataCid,
             publicKey,
@@ -48,7 +49,7 @@ async function processData(dataCid: string): Promise<{ valid: boolean, processed
         // Decrypt the file
         const decrypted = await lighthouse.decryptFile(
             dataCid,
-            fileEncryptionKey.data.key as string // Type assertion since we checked for null above
+            fileEncryptionKey.data.key
         );
 
         // Convert decrypted data to string and get first line
@@ -64,26 +65,22 @@ async function processData(dataCid: string): Promise<{ valid: boolean, processed
         fs.writeFileSync(tempFile, firstLine);
         console.log('Wrote to temp file:', tempFile);
 
-        // Get message signature for encryption
-        const message = "Signing message for Lighthouse";
-        const encryptionSignedMessage = await wallet.signMessage(message);
-        console.log("encryptionSignedMessage", encryptionSignedMessage);
-
-        // Upload the new file encrypted
+        // Upload the processed file with encryption
+        const jwt = await signAuthMessage(process.env.PRIVATE_KEY!);
         const uploadResponse = await lighthouse.uploadEncrypted(
             tempFile,
             process.env.LIGHTHOUSE_API_KEY!,
             publicKey,
-            encryptionSignedMessage
+            jwt
         );
         console.log('uploadResponse', uploadResponse);
 
         // Clean up temp file
         fs.unlinkSync(tempFile);
 
-        // Check if uploadResponse is an array and handle accordingly
-        const responseData = Array.isArray(uploadResponse) ? uploadResponse[0] : uploadResponse;
-        const cid = responseData.data?.Hash;
+        // Handle upload response
+        const responseData = Array.isArray(uploadResponse.data) ? uploadResponse.data[0] : uploadResponse.data;
+        const cid = responseData?.Hash;
 
         if (!cid) {
             throw new Error('Failed to get CID from upload response');
