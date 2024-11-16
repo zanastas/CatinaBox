@@ -6,32 +6,32 @@ import "solady/src/utils/SafeTransferLib.sol";
 import "solady/src/tokens/ERC20.sol";
 
 contract CatinaBox is Ownable {
-    // Roles
-    bytes32 public constant TEE_ROLE = keccak256("TEE_ROLE");
+    error NotTEE();
+    error ExperimentNotFound();
+    error ExperimentNotActive();
+    error AlreadyValidated();
+    error AlreadyPaid();
+    error NotExperimentOwner();
 
-    // Structs
     struct Experiment {
         address owner;
-        string requestedDataSpec; // JSON string specifying required data
+        string requestedDataSpec;
         uint256 reward;
         bool active;
         ERC20 paymentToken;
     }
 
     struct DataShare {
-        string dataCid;
         bool isFullAccess;
         bool validated;
         bool paid;
     }
 
-    // State variables
     mapping(uint256 => Experiment) public experiments;
     mapping(address => bool) public isTrustedTEE;
-    mapping(uint256 => mapping(string => DataShare)) public experimentDataShares; // experimentId => dataCid => DataShare
+    mapping(uint256 => mapping(string => DataShare)) public experimentDataShares;
     uint256 public nextExperimentId;
 
-    // Events
     event ExperimentCreated(
         uint256 indexed experimentId,
         address indexed owner,
@@ -41,7 +41,7 @@ contract CatinaBox is Ownable {
     );
     event DataShareInitiated(uint256 indexed experimentId, address indexed sharer, string dataCid, bool isFullAccess);
     event DataShareFinalized(
-        uint256 indexed experimentId, string dataCid, string processedCid, address indexed sharer, bool isFullAccess
+        uint256 indexed experimentId, string originalCid, string processedCid, address indexed sharer, bool isFullAccess
     );
 
     constructor() {
@@ -49,21 +49,19 @@ contract CatinaBox is Ownable {
     }
 
     modifier onlyTEE() {
-        require(isTrustedTEE[msg.sender], "Caller is not a trusted TEE");
+        if (!isTrustedTEE[msg.sender]) revert NotTEE();
         _;
     }
 
     modifier experimentExists(uint256 experimentId) {
-        require(experiments[experimentId].owner != address(0), "Experiment does not exist");
+        if (experiments[experimentId].owner == address(0)) revert ExperimentNotFound();
         _;
     }
 
-    // Admin functions
     function setTrustedTEE(address tee, bool trusted) external onlyOwner {
         isTrustedTEE[tee] = trusted;
     }
 
-    // Main functions
     function createExperiment(string calldata requestedDataSpec, uint256 reward, address paymentToken)
         external
         returns (uint256)
@@ -86,10 +84,10 @@ contract CatinaBox is Ownable {
         external
         experimentExists(experimentId)
     {
-        require(experiments[experimentId].active, "Experiment is not active");
+        if (!experiments[experimentId].active) revert ExperimentNotActive();
 
         experimentDataShares[experimentId][dataCid] =
-            DataShare({dataCid: dataCid, isFullAccess: isFullAccess, validated: false, paid: false});
+            DataShare({isFullAccess: isFullAccess, validated: false, paid: false});
 
         emit DataShareInitiated(experimentId, msg.sender, dataCid, isFullAccess);
     }
@@ -104,40 +102,31 @@ contract CatinaBox is Ownable {
         Experiment storage experiment = experiments[experimentId];
         DataShare storage dataShare = experimentDataShares[experimentId][originalCid];
 
-        require(!dataShare.validated, "Data already validated");
-        require(!dataShare.paid, "Already paid");
+        if (dataShare.validated) revert AlreadyValidated();
+        if (dataShare.paid) revert AlreadyPaid();
 
         if (isValid) {
             dataShare.validated = true;
-
-            // Store the processed CID (same as original for full access)
             string memory finalCid = dataShare.isFullAccess ? originalCid : processedCid;
-            experimentDataShares[experimentId][finalCid] =
-                DataShare({dataCid: finalCid, isFullAccess: dataShare.isFullAccess, validated: true, paid: false});
 
-            // Pay the sharer
+            experimentDataShares[experimentId][finalCid] =
+                DataShare({isFullAccess: dataShare.isFullAccess, validated: true, paid: true});
+
             SafeTransferLib.safeTransferFrom(
                 address(experiment.paymentToken), experiment.owner, sharer, experiment.reward
             );
-
-            experimentDataShares[experimentId][finalCid].paid = true;
 
             emit DataShareFinalized(experimentId, originalCid, finalCid, sharer, dataShare.isFullAccess);
         }
     }
 
-    // View functions
     function hasAccess(uint256 experimentId, address user, string calldata dataCid)
         external
         view
         experimentExists(experimentId)
         returns (bool)
     {
-        // Only experiment owner can access shared data
-        if (user != experiments[experimentId].owner) {
-            return false;
-        }
-
+        if (user != experiments[experimentId].owner) return false;
         DataShare storage dataShare = experimentDataShares[experimentId][dataCid];
         return dataShare.validated && dataShare.paid;
     }
