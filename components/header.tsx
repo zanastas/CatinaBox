@@ -12,12 +12,13 @@ const Header = () => {
           <Link href="/">
             <div className="flex items-center gap-3">
               <Image 
-                src="/assets/logos/fil-b-mini-logo.png" 
-                alt="Logo" 
-                width={32} 
-                height={32}
+                src="/cat-in-box.png" 
+                alt="CatinaBox Logo" 
+                width={40} 
+                height={40}
+                className="rounded-lg"
               />
-              <span className="text-xl font-medium">Stake & Run</span>
+              <span className="text-xl font-medium">CatinaBox</span>
             </div>
           </Link>
 
