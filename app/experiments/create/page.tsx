@@ -260,7 +260,7 @@ export default function CreateExperiment() {
             </div>
           </div>
 
-          {/* Required Data Card */}
+          {/* Required Data Card - Updated */}
           <div className="card">
             <h2 className="text-xl font-medium mb-6">Required Data</h2>
             <div className="space-y-4">
@@ -270,25 +270,15 @@ export default function CreateExperiment() {
                     className="bg-gray-50 p-4 flex items-center justify-between cursor-pointer"
                     onClick={() => toggleSection(dataType.id)}
                   >
-                    <div className="flex items-center space-x-4">
-                      <input
-                        type="checkbox"
-                        checked={selectedData[dataType.id].all}
-                        onChange={(e) => {
-                          e.stopPropagation();
-                          toggleDataType(dataType.id, e.target.checked);
-                        }}
-                        className="h-4 w-4 text-[#2b7e21] rounded border-gray-300 focus:ring-[#2b7e21]"
-                      />
-                      <span className="font-medium text-gray-900">{dataType.name}</span>
-                    </div>
+                    <span className="font-medium text-gray-900">{dataType.name}</span>
                     <FaChevronDown
-                      className={`transform transition-transform text-gray-500 ${expandedSections[dataType.id] ? 'rotate-180' : ''
-                        }`}
+                      className={`transform transition-transform text-gray-500 ${
+                        expandedSections[dataType.id] ? 'rotate-180' : ''
+                      }`}
                     />
                   </div>
 
-                  {expandedSections[dataType.id] && !selectedData[dataType.id].all && (
+                  {expandedSections[dataType.id] && (
                     <div className="p-4 border-t bg-white">
                       <div className="space-y-3">
                         {dataType.subTypes.map((subType) => (
@@ -313,12 +303,12 @@ export default function CreateExperiment() {
             </div>
           </div>
 
-          {/* Reward Settings Card */}
+          {/* Reward Settings Card - Updated */}
           <div className="card">
             <h2 className="text-xl font-medium mb-6">Reward Settings</h2>
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Payment per User (FIL)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Payment per User (🐱 CBOX)</label>
                 <input
                   type="number"
                   step="0.01"
@@ -340,7 +330,7 @@ export default function CreateExperiment() {
               {stakeEnabled && (
                 <div className="space-y-4 pl-7">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Stake Amount (FIL)</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Stake Amount (🐱 CBOX)</label>
                     <input
                       type="number"
                       step="0.01"

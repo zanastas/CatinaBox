@@ -180,7 +180,7 @@ export default function HealthData() {
                               <div className="flex justify-between items-start mb-2">
                                 <span className="font-medium text-[#2b7e21] text-lg">{offer.organization}</span>
                                 <span className="font-medium bg-[#ebf7eb] text-[#2b7e21] px-3 py-1 rounded-full">
-                                  ${offer.reward}
+                                  🐱 {offer.reward}
                                 </span>
                               </div>
                               <p className="text-sm text-gray-600 mb-2">{offer.dataRequired}</p>
