@@ -4,8 +4,7 @@ import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Header from '@components/header';
 import Footer from '@components/footer';
-import { FaUsers, FaDna, FaCalendar, FaCoins, FaLock, FaCheck, FaBrain, FaAppleAlt, FaDumbbell, FaRunning, FaMoon } from 'react-icons/fa';
-import ExperimentChat from '@/components/experiment-chat';
+import { FaUsers, FaDna, FaCalendar, FaCoins, FaLock, FaCheck } from 'react-icons/fa';
 
 interface ExperimentDetails {
   name: string;
@@ -18,8 +17,6 @@ interface ExperimentDetails {
   startDate: string;
   endDate: string;
   status: 'active' | 'completed' | 'upcoming';
-  chatId?: string;
-  chatId?: string;
 }
 
 const experiments = {
@@ -116,10 +113,6 @@ The study aims to develop AI models that can predict optimal workout patterns an
   }
 }
 
-export default function ExperimentDetails() {
-  const params = useParams();
-  const [experiment] = useState<ExperimentDetails>(experiments[params.id as keyof typeof experiments]);
-
   const getStatusBadge = (status: string) => {
     const styles = {
       active: "bg-green-100 text-green-800",
@@ -200,13 +193,6 @@ export default function ExperimentDetails() {
                 ))}
               </div>
             </div>
-
-            {experiment.chatId && (
-              <ExperimentChat
-                experimentId={params.id as string}
-                chatId={experiment.chatId}
-              />
-            )}
           </div>
 
           {/* Sidebar */}
