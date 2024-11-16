@@ -29,8 +29,8 @@ const Header = () => {
             <Link href="/experiments" className="nav-link">
               Experiments
             </Link>
-            <Link href="/docs" className="nav-link">
-              Docs
+            <Link href="/about" className="nav-link">
+              About
             </Link>
             <Link href="/leaderboard" className="nav-link flex items-center gap-1">
               Leaderboard
