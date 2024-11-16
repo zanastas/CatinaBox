@@ -4,6 +4,18 @@ pragma solidity ^0.8.13;
 import "solady/src/auth/Ownable.sol";
 import "solady/src/utils/SafeTransferLib.sol";
 import "solady/src/tokens/ERC20.sol";
+/*
+    /\___/\                  
+   (  ^.^  )     ┌──────────┐
+    \  ~  /      │  Meow!   │
+   ┌─|>o<|─┐     │  I live  │
+   │       │     │  in this │
+   │       │     │   box!   │
+   │  BOX  │     └──────────┘
+   │       │
+   └───────┘
+    |__|__|
+*/
 
 contract CatinaBox is Ownable {
     error NotTEE();
