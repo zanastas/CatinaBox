@@ -13,6 +13,7 @@ contract CatinaBox is Ownable {
     error AlreadyPaid();
     error NotExperimentOwner();
     error ExperimentExpired();
+    error AlreadyInitiated();
 
     struct Experiment {
         address owner;
@@ -25,8 +26,10 @@ contract CatinaBox is Ownable {
 
     struct DataShare {
         bool isFullAccess;
-        bool validated;
+        bool valid;
+        bool accepted;
         bool paid;
+        bool initialized;
     }
 
     mapping(uint256 => Experiment) public experiments;
@@ -92,8 +95,11 @@ contract CatinaBox is Ownable {
         if (!experiment.active) revert ExperimentNotActive();
         if (experiment.endDate != 0 && block.timestamp > experiment.endDate) revert ExperimentExpired();
 
+        DataShare storage dataShare = experimentDataShares[experimentId][dataCid];
+        if (dataShare.initialized) revert AlreadyInitiated();
+
         experimentDataShares[experimentId][dataCid] =
-            DataShare({isFullAccess: isFullAccess, validated: false, paid: false});
+            DataShare({isFullAccess: isFullAccess, valid: false, accepted: false, paid: false, initialized: true});
 
         emit DataShareInitiated(experimentId, msg.sender, dataCid, isFullAccess);
     }
@@ -103,24 +109,32 @@ contract CatinaBox is Ownable {
         string calldata originalCid,
         string calldata processedCid,
         address sharer,
-        bool isValid
+        bool valid,
+        bool accepted
     ) external onlyTEE experimentExists(experimentId) {
         Experiment storage experiment = experiments[experimentId];
         DataShare storage dataShare = experimentDataShares[experimentId][originalCid];
 
-        if (dataShare.validated) revert AlreadyValidated();
+        if (dataShare.valid) revert AlreadyValidated();
         if (dataShare.paid) revert AlreadyPaid();
 
-        if (isValid) {
-            dataShare.validated = true;
+        if (valid) {
+            dataShare.valid = true;
             string memory finalCid = dataShare.isFullAccess ? originalCid : processedCid;
 
-            experimentDataShares[experimentId][finalCid] =
-                DataShare({isFullAccess: dataShare.isFullAccess, validated: true, paid: true});
+            experimentDataShares[experimentId][finalCid] = DataShare({
+                isFullAccess: dataShare.isFullAccess,
+                valid: true,
+                paid: accepted,
+                accepted: accepted,
+                initialized: true
+            });
 
-            SafeTransferLib.safeTransferFrom(
-                address(experiment.paymentToken), experiment.owner, sharer, experiment.reward
-            );
+            if (accepted) {
+                SafeTransferLib.safeTransferFrom(
+                    address(experiment.paymentToken), experiment.owner, sharer, experiment.reward
+                );
+            }
 
             emit DataShareFinalized(experimentId, originalCid, finalCid, sharer, dataShare.isFullAccess);
         }
@@ -134,7 +148,7 @@ contract CatinaBox is Ownable {
     {
         if (user != experiments[experimentId].owner) return false;
         DataShare storage dataShare = experimentDataShares[experimentId][dataCid];
-        return dataShare.validated && dataShare.paid;
+        return dataShare.valid && dataShare.accepted && dataShare.paid;
     }
 
     function getExperimentDetails(uint256 experimentId)

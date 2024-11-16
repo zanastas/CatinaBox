@@ -79,9 +79,16 @@ contract CatinaBoxTest is Test {
         vm.prank(dataProvider);
         catinaBox.initiateDataSharing(experimentId, FULL_DATA_CID, true);
 
-        // Finalize data sharing
+        // Finalize data sharing with valid and accepted data
         vm.prank(tee);
-        catinaBox.finalizeDataSharing(experimentId, FULL_DATA_CID, FULL_DATA_CID, dataProvider, true);
+        catinaBox.finalizeDataSharing(
+            experimentId,
+            FULL_DATA_CID,
+            FULL_DATA_CID,
+            dataProvider,
+            true, // valid
+            true // accepted
+        );
 
         // Check access
         bool hasAccess = catinaBox.hasAccess(experimentId, experimentOwner, FULL_DATA_CID);
@@ -104,7 +111,14 @@ contract CatinaBoxTest is Test {
 
         // Finalize data sharing with partial data
         vm.prank(tee);
-        catinaBox.finalizeDataSharing(experimentId, FULL_DATA_CID, PARTIAL_DATA_CID, dataProvider, true);
+        catinaBox.finalizeDataSharing(
+            experimentId,
+            FULL_DATA_CID,
+            PARTIAL_DATA_CID,
+            dataProvider,
+            true, // valid
+            true // accepted
+        );
 
         // Check access to partial data
         bool hasAccess = catinaBox.hasAccess(experimentId, experimentOwner, PARTIAL_DATA_CID);
@@ -113,6 +127,9 @@ contract CatinaBoxTest is Test {
         // Check no access to full data
         bool hasFullAccess = catinaBox.hasAccess(experimentId, experimentOwner, FULL_DATA_CID);
         assertFalse(hasFullAccess);
+
+        // Check payment
+        assertEq(token.balanceOf(dataProvider), REWARD);
     }
 
     function test_ExperimentExpiration() public {
@@ -147,7 +164,7 @@ contract CatinaBoxTest is Test {
     function test_RevertWhenNotTEE() public {
         vm.prank(address(0xdead));
         vm.expectRevert(CatinaBox.NotTEE.selector);
-        catinaBox.finalizeDataSharing(0, FULL_DATA_CID, PARTIAL_DATA_CID, dataProvider, true);
+        catinaBox.finalizeDataSharing(0, FULL_DATA_CID, PARTIAL_DATA_CID, dataProvider, true, true);
     }
 
     function test_RevertWhenExperimentNotFound() public {
@@ -167,11 +184,227 @@ contract CatinaBoxTest is Test {
         catinaBox.initiateDataSharing(experimentId, FULL_DATA_CID, true);
 
         vm.prank(tee);
-        catinaBox.finalizeDataSharing(experimentId, FULL_DATA_CID, FULL_DATA_CID, dataProvider, true);
+        catinaBox.finalizeDataSharing(
+            experimentId,
+            FULL_DATA_CID,
+            FULL_DATA_CID,
+            dataProvider,
+            true, // valid
+            true // accepted
+        );
 
         // Try to validate again
         vm.prank(tee);
         vm.expectRevert(CatinaBox.AlreadyValidated.selector);
-        catinaBox.finalizeDataSharing(experimentId, FULL_DATA_CID, FULL_DATA_CID, dataProvider, true);
+        catinaBox.finalizeDataSharing(experimentId, FULL_DATA_CID, FULL_DATA_CID, dataProvider, true, true);
+    }
+
+    function test_ValidButNotAcceptedData() public {
+        // Create experiment
+        vm.startPrank(experimentOwner);
+        token.approve(address(catinaBox), REWARD);
+        uint256 experimentId = catinaBox.createExperiment(DATA_SPEC, REWARD, address(token), 0);
+        vm.stopPrank();
+
+        // Initiate data sharing
+        vm.prank(dataProvider);
+        catinaBox.initiateDataSharing(experimentId, FULL_DATA_CID, true);
+
+        // Finalize with valid but not accepted data
+        vm.prank(tee);
+        catinaBox.finalizeDataSharing(
+            experimentId,
+            FULL_DATA_CID,
+            FULL_DATA_CID,
+            dataProvider,
+            true, // valid data
+            false // but not accepted
+        );
+
+        // Check no access
+        bool hasAccess = catinaBox.hasAccess(experimentId, experimentOwner, FULL_DATA_CID);
+        assertFalse(hasAccess);
+
+        // Check no payment
+        assertEq(token.balanceOf(dataProvider), 0);
+    }
+
+    function test_ValidAndAcceptedData() public {
+        // Create experiment
+        vm.startPrank(experimentOwner);
+        token.approve(address(catinaBox), REWARD);
+        uint256 experimentId = catinaBox.createExperiment(DATA_SPEC, REWARD, address(token), 0);
+        vm.stopPrank();
+
+        // Initiate data sharing
+        vm.prank(dataProvider);
+        catinaBox.initiateDataSharing(experimentId, FULL_DATA_CID, true);
+
+        // Finalize with valid and accepted data
+        vm.prank(tee);
+        catinaBox.finalizeDataSharing(
+            experimentId,
+            FULL_DATA_CID,
+            FULL_DATA_CID,
+            dataProvider,
+            true, // valid data
+            true // and accepted
+        );
+
+        // Check access granted
+        bool hasAccess = catinaBox.hasAccess(experimentId, experimentOwner, FULL_DATA_CID);
+        assertTrue(hasAccess);
+
+        // Check payment received
+        assertEq(token.balanceOf(dataProvider), REWARD);
+    }
+
+    function test_InvalidDataNotAccepted() public {
+        // Create experiment
+        vm.startPrank(experimentOwner);
+        token.approve(address(catinaBox), REWARD);
+        uint256 experimentId = catinaBox.createExperiment(DATA_SPEC, REWARD, address(token), 0);
+        vm.stopPrank();
+
+        // Initiate data sharing
+        vm.prank(dataProvider);
+        catinaBox.initiateDataSharing(experimentId, FULL_DATA_CID, true);
+
+        // Finalize with invalid data
+        vm.prank(tee);
+        catinaBox.finalizeDataSharing(
+            experimentId,
+            FULL_DATA_CID,
+            FULL_DATA_CID,
+            dataProvider,
+            false, // invalid data
+            false // not accepted
+        );
+
+        // Check no access
+        bool hasAccess = catinaBox.hasAccess(experimentId, experimentOwner, FULL_DATA_CID);
+        assertFalse(hasAccess);
+
+        // Check no payment
+        assertEq(token.balanceOf(dataProvider), 0);
+    }
+
+    function test_PartialDataAcceptance() public {
+        // Create experiment
+        vm.startPrank(experimentOwner);
+        token.approve(address(catinaBox), REWARD);
+        uint256 experimentId = catinaBox.createExperiment(DATA_SPEC, REWARD, address(token), 0);
+        vm.stopPrank();
+
+        // Initiate partial data sharing
+        vm.prank(dataProvider);
+        catinaBox.initiateDataSharing(experimentId, FULL_DATA_CID, false);
+
+        // Finalize with valid and accepted partial data
+        vm.prank(tee);
+        catinaBox.finalizeDataSharing(
+            experimentId,
+            FULL_DATA_CID,
+            PARTIAL_DATA_CID,
+            dataProvider,
+            true, // valid data
+            true // and accepted
+        );
+
+        // Check access to partial data
+        bool hasPartialAccess = catinaBox.hasAccess(experimentId, experimentOwner, PARTIAL_DATA_CID);
+        assertTrue(hasPartialAccess);
+
+        // Check no access to full data
+        bool hasFullAccess = catinaBox.hasAccess(experimentId, experimentOwner, FULL_DATA_CID);
+        assertFalse(hasFullAccess);
+
+        // Check payment received
+        assertEq(token.balanceOf(dataProvider), REWARD);
+    }
+
+    function test_MultipleDataSharesWithDifferentAcceptance() public {
+        // Create experiment
+        vm.startPrank(experimentOwner);
+        token.approve(address(catinaBox), REWARD * 2);
+        uint256 experimentId = catinaBox.createExperiment(DATA_SPEC, REWARD, address(token), 0);
+        vm.stopPrank();
+
+        // First data share - valid but not accepted
+        vm.prank(dataProvider);
+        catinaBox.initiateDataSharing(experimentId, "CID1", true);
+
+        vm.prank(tee);
+        catinaBox.finalizeDataSharing(experimentId, "CID1", "CID1", dataProvider, true, false);
+
+        // Second data share - valid and accepted
+        vm.prank(dataProvider);
+        catinaBox.initiateDataSharing(experimentId, "CID2", true);
+
+        vm.prank(tee);
+        catinaBox.finalizeDataSharing(experimentId, "CID2", "CID2", dataProvider, true, true);
+
+        // Check access
+        assertFalse(catinaBox.hasAccess(experimentId, experimentOwner, "CID1"));
+        assertTrue(catinaBox.hasAccess(experimentId, experimentOwner, "CID2"));
+
+        // Check payment only for accepted data
+        assertEq(token.balanceOf(dataProvider), REWARD);
+    }
+
+    function test_RevertWhenAlreadyInitiated() public {
+        // Create experiment
+        vm.startPrank(experimentOwner);
+        token.approve(address(catinaBox), REWARD);
+        uint256 experimentId = catinaBox.createExperiment(DATA_SPEC, REWARD, address(token), 0);
+        vm.stopPrank();
+
+        // First initiation
+        vm.prank(dataProvider);
+        catinaBox.initiateDataSharing(experimentId, FULL_DATA_CID, true);
+
+        // Try to initiate again with same CID
+        vm.prank(dataProvider);
+        vm.expectRevert(CatinaBox.AlreadyInitiated.selector);
+        catinaBox.initiateDataSharing(experimentId, FULL_DATA_CID, true);
+    }
+
+    function test_InitializedFlagIsSet() public {
+        // Create experiment
+        vm.startPrank(experimentOwner);
+        token.approve(address(catinaBox), REWARD);
+        uint256 experimentId = catinaBox.createExperiment(DATA_SPEC, REWARD, address(token), 0);
+        vm.stopPrank();
+
+        // Initiate data sharing
+        vm.prank(dataProvider);
+        catinaBox.initiateDataSharing(experimentId, FULL_DATA_CID, true);
+
+        // Get DataShare struct and check initialized flag
+        (bool isFullAccess, bool valid, bool accepted, bool paid, bool initialized) =
+            catinaBox.experimentDataShares(experimentId, FULL_DATA_CID);
+
+        assertTrue(initialized);
+        assertTrue(isFullAccess);
+        assertFalse(valid);
+        assertFalse(accepted);
+        assertFalse(paid);
+    }
+
+    function test_RevertWhenAlreadyInitiatedWithDifferentAccess() public {
+        // Create experiment
+        vm.startPrank(experimentOwner);
+        token.approve(address(catinaBox), REWARD);
+        uint256 experimentId = catinaBox.createExperiment(DATA_SPEC, REWARD, address(token), 0);
+        vm.stopPrank();
+
+        // First initiation with full access
+        vm.prank(dataProvider);
+        catinaBox.initiateDataSharing(experimentId, FULL_DATA_CID, true);
+
+        // Try to initiate again with partial access
+        vm.prank(dataProvider);
+        vm.expectRevert(CatinaBox.AlreadyInitiated.selector);
+        catinaBox.initiateDataSharing(experimentId, FULL_DATA_CID, false);
     }
 }
