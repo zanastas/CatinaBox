@@ -1,32 +1,37 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+Cat In A Box  is a DeSci and SocialFi platform empowering anyone to participate in community science and decentralized experiments. It incentivizes users to share private health data securely and engage in citizen science projects tailored to their interests. Built at ETHGlobal Bangkok, Nov 2024.
 
-## Getting Started
+#### Problem: 
+Scientific discoveries take too long to reach practical use for the average users, especially for those seeking personalized health solutions. Most insights are limited to scientists or biohackers, often inaccessible or irrelevant to everyday users. Public participation in scientific studies is low due to a lack of incentives, understanding, and engaging social features, leading to a shortage of diverse, high-quality data for innovation.
 
+#### Solution:
+Cat In A Box enables average users to:
+- Participate in scientific studies with minimal cost and earn rewards in crypto
+- Engage in community-driven experiments (e.g., pharmacogenomics, nutrition, personalized healthcare).
+- Own and control their health data while contributing to collective knowledge.
 
-First, install the dependencies:
+And it allows BioDAOs/ DeSci communities to:
+- Easily set up citizen science projects and recruit users 
+- Foster transparent experimentation and data collection
+- Privately store and analyze data
 
-```bash
-npm install
-```
+#### Product Features:
+1. 100% User-Owned Data: Health data encrypted and stored on-chain in decentralized storage, under a single user wallet.
+2. User-Controlled Data Sharing:
+	- Users share specific data as needed (e.g., a single SNP for an experiment) and earn crypto rewards.
+	- Data processing occurs in TEE to ensure privacy 
+3. Intuitive UX/UI built for Desci projects:
+	- Social login via Dynamic as individual user or community.
+	- DeSci organizations can seamlessly create experiments 
+	- AI agent assists users in understanding their participation and results.
+4. Social Engagement:
+	- Share results with friends, compare personal data to community data
+	- Leaderboard 
+5. Scientist-lead Experimentation :
+	- Scientists can participate and guide experiment designs while maintaining anonymity.
 
-Update the env: [OPTIONAL]
-You can get the credentials from here : https://app.dynamic.xyz/dashboard/developer
-```bash
-NEXT_PUBLIC_DYNAMIC_ENVIRONMENT_ID=""
-```
+#### Technical implementation:
+- Filecoin and Lighthouse for encrypted and decentralized data storage
+- Phala for TEE (Trusted Execution Environment) computation
+- Dynamic wallet
+- Deployed on the Zircuit and Scroll testnets
 
-Next, run the development server:
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
