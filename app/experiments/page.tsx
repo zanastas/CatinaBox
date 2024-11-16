@@ -53,45 +53,48 @@ export default function Experiments() {
       <div className="container-wide pt-32 pb-20">
         <div className="flex justify-between items-center mb-12">
           <div>
-            <h1 className="text-4xl font-medium mb-2">Experiments</h1>
+            <h1 className="text-4xl font-medium mb-2">Ongoing Experiments</h1>
             <p className="text-gray-600">Join research studies and earn rewards</p>
           </div>
-          <Link href="/experiments/create">
-            <button className="btn-primary">
-              <FaPlus className="mr-2" /> Create Experiment
-            </button>
+          <Link 
+            href="/experiments/create"
+            className="flex items-center gap-2 px-6 py-3 bg-[#2b7e21] hover:bg-[#236b1a] text-white rounded-xl transition-colors"
+          >
+            <FaPlus className="text-lg" />
+            <span>Create Experiment</span>
           </Link>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {experiments.map((experiment) => (
-            <Link href={`/experiments/${experiment.id}`} key={experiment.id}>
-              <div className="card hover:scale-[1.02]">
-                <div className="flex flex-col gap-4">
+            <Link href={`/experiments/${experiment.id}`} key={experiment.id} className="block">
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 hover:border-[#2b7e21] transition-all duration-200 hover:shadow-lg">
+                <div className="flex flex-col gap-6">
                   <div className="flex items-center justify-between">
-                    <div className="p-3 bg-green-50 rounded-2xl">
+                    <div className="w-12 h-12 bg-[#ebf7eb] rounded-xl flex items-center justify-center">
                       {experiment.icon}
                     </div>
                     <div className="flex items-center gap-2 text-gray-600">
-                      <FaUsers />
-                      <span>{experiment.participants}</span>
+                      <FaUsers className="text-[#2b7e21]" />
+                      <span className="font-medium">{experiment.participants}</span>
                     </div>
                   </div>
                   
                   <div>
-                    <h2 className="text-xl font-medium mb-1">{experiment.name}</h2>
-                    <p className="text-sm text-gray-600">by {experiment.organization}</p>
+                    <h2 className="text-xl font-medium mb-2 group-hover:text-[#2b7e21] transition-colors">
+                      {experiment.name}
+                    </h2>
+                    <p className="text-sm text-gray-600 mb-2">by {experiment.organization}</p>
+                    <p className="text-gray-600 mb-4">{experiment.description}</p>
                   </div>
                   
-                  <p className="text-gray-600">{experiment.description}</p>
-                  
                   <div>
-                    <p className="text-sm font-medium mb-2">Required Data:</p>
+                    <p className="text-sm font-medium mb-3 text-gray-700">Required Data:</p>
                     <div className="flex flex-wrap gap-2">
                       {experiment.requiredData.map((data) => (
                         <span 
                           key={data}
-                          className="status-badge"
+                          className="px-3 py-1 bg-[#ebf7eb] text-[#2b7e21] rounded-full text-sm font-medium"
                         >
                           {data}
                         </span>

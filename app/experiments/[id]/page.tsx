@@ -73,8 +73,8 @@ Use your shampoo daily and log hair loss (number of hairs) in the platform.
       "Blood Vitamin D (optional)"
     ],
     payment: 50,
-    startDate: "2024-03-01",
-    endDate: "2024-04-01",
+    startDate: "2024-11-01",
+    endDate: "2024-11-30",
     status: 'active',
     chatId: "hairdao-experiment-chat",
     icon: <FaDna size={40} />,
@@ -92,8 +92,8 @@ Use your shampoo daily and log hair loss (number of hairs) in the platform.
     participants: 200,
     requiredData: ["Running Data", "Heart Rate Data", "Health Check-ups"],
     payment: 70,
-    startDate: "2024-04-01",
-    endDate: "2024-10-01",
+    startDate: "2024-11-01",
+    endDate: "2024-11-30",
     status: 'active',
     chatId: "running-chat-id-here"
   },
@@ -105,8 +105,8 @@ Use your shampoo daily and log hair loss (number of hairs) in the platform.
     participants: 180,
     requiredData: ["Sleep Data", "Cognitive Test Scores", "Health Check-ups"],
     payment: 60,
-    startDate: "2024-05-01",
-    endDate: "2024-11-01",
+    startDate: "2024-11-01",
+    endDate: "2024-11-30",
     status: 'active',
     chatId: "sleep-chat-id-here"
   },
@@ -123,8 +123,8 @@ The study utilizes advanced analytics to understand how different lifestyle fact
     participants: 175,
     targetParticipants: 600,
     payment: 65,
-    startDate: '2024-05-01',
-    endDate: '2024-11-01'
+    startDate: '2024-11-01',
+    endDate: '2024-11-30'
   },
   'nutrition': {
     id: 'nutrition',
@@ -139,8 +139,8 @@ Participants will contribute to groundbreaking research while receiving insights
     participants: 300,
     targetParticipants: 800,
     payment: 70,
-    startDate: '2024-06-01',
-    endDate: '2024-12-01'
+    startDate: '2024-11-01',
+    endDate: '2024-11-30'
   },
   'fitness-tracking': {
     id: 'fitness-tracking',
@@ -155,8 +155,8 @@ The study aims to develop AI models that can predict optimal workout patterns an
     participants: 250,
     targetParticipants: 700,
     payment: 55,
-    startDate: '2024-07-01',
-    endDate: '2024-12-31',
+    startDate: '2024-11-01',
+    endDate: '2024-11-30',
     stakingRequired: {
       amount: 50,
       duration: '2 months'
@@ -256,8 +256,9 @@ const ExperimentDetails = ({ experiment }: { experiment: ExperimentData }) => {
               <p className="text-gray-600 mb-6">
                 Share your data securely and earn rewards for contributing to research.
               </p>
-              <button className="btn-primary w-full">
-                <FaLock className="mr-2" /> Join Securely
+              <button className="flex items-center justify-center w-full px-4 py-3 bg-[#2b7e21] hover:bg-[#236b1a] text-white rounded-xl transition-colors">
+                <FaLock className="mr-2" /> 
+                <span>Join Securely</span>
               </button>
             </div>
 
