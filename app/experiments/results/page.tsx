@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Header from "@components/header";
-import { FaChartLine, FaUsers, FaCalendar } from 'react-icons/fa';
+import { FaChartLine, FaUsers, FaCalendar, FaTwitter, FaShare } from 'react-icons/fa';
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -14,6 +14,7 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
+import { SiLens, SiFarcaster } from 'react-icons/si';
 
 ChartJS.register(
   CategoryScale,
@@ -69,11 +70,53 @@ export default function Results() {
     }
   };
 
+  const shareText = `🧬 Just reduced my hair loss by 42% in the HairDAO experiment! Loving the data-driven approach to hair care. Check it out on @CatinaBox! 🔬 #DeSci #Web3`;
+
+  const shareOnTwitter = () => {
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
+    window.open(url, '_blank');
+  };
+
   return (
     <div className="min-h-screen bg-[#f8f3ea]">
       <Header />
       <div className="container-wide pt-32 pb-20">
-        <h1 className="text-4xl font-medium mb-8">Your Experiment Results</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-medium">Your Experiment Results</h1>
+          
+          {/* Share Results Button */}
+          <div className="relative group">
+            <button 
+              className="flex items-center gap-2 px-6 py-3 bg-[#2b7e21] hover:bg-[#236b1a] text-white rounded-xl transition-colors"
+            >
+              <FaShare />
+              <span>Share Results</span>
+            </button>
+            
+            {/* Share Options Dropdown */}
+            <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity">
+              <button 
+                onClick={shareOnTwitter}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#ebf7eb] transition-colors text-left"
+              >
+                <FaTwitter className="text-[#1DA1F2]" />
+                <span>Share on Twitter</span>
+              </button>
+              <button 
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#ebf7eb] transition-colors text-left"
+              >
+                <SiFarcaster className="text-[#855DCD]" />
+                <span>Share on Farcaster</span>
+              </button>
+              <button 
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#ebf7eb] transition-colors text-left"
+              >
+                <SiLens className="text-[#00501E]" />
+                <span>Share on Lens</span>
+              </button>
+            </div>
+          </div>
+        </div>
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
