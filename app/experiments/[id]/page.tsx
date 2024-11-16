@@ -5,33 +5,84 @@ import { useParams } from 'next/navigation';
 import Header from '@components/header';
 import Footer from '@components/footer';
 import { FaUsers, FaDna, FaCalendar, FaCoins, FaLock, FaCheck, FaBrain, FaAppleAlt, FaDumbbell } from 'react-icons/fa';
+import ReactMarkdown from 'react-markdown';
+import type { JSX } from 'react';
 
-interface Experiment {
-  id: string;
+interface ExperimentData {
   name: string;
   organization: string;
-  status: 'active' | 'completed' | 'upcoming';
+  description: string;
   fullDescription: string;
   participants: number;
+  requiredData: string[];
   payment: number;
   startDate: string;
   endDate: string;
-  requiredData: string[];
+  status?: 'active' | 'completed' | 'upcoming';
+  chatId?: string;
+  icon?: JSX.Element;
+  targetParticipants?: number;
+  stakingRequired?: {
+    amount: number;
+    duration: string;
+  };
 }
 
-const experiments = {
+const experiments: Record<string, ExperimentData> = {
   'hair-loss': {
-    name: "Hair Loss Treatment Study",
-    organization: "Hair DAO",
-    description: "Study for treatment efficacy in people with specific genetic markers",
-    fullDescription: "This comprehensive study aims to understand the relationship between specific genetic markers and the effectiveness of various hair loss treatments. Participants will contribute their genetic data and regular progress updates.",
+    name: "DNA-Driven Hair Care Experiment",
+    organization: "HairDAO",
+    description: "Crack the Code. Save the Strand.",
+    fullDescription: `HairDAO is on a mission to outsmart baldness with science! We've designed two cutting-edge personalized shampoos based on your genetic data to tackle hair loss at the root. Now, we need YOU to help us test them in this first-of-its-kind, decentralized science experiment.
+
+**WHO'S THIS FOR:**
+
+• Baldness warriors ready to fight hair loss
+
+• Those with genetic data (23andMe, AncestryDNA)
+
+• Willing to wash your hair, count strands, and join the movement for 30 days
+
+**HOW IT WORKS:**
+
+1. Get Matched 🧬
+Share your DNA profile, and we'll pair you with the shampoo that's genetically tailored to YOU.
+- **💪 DHT Fighters:** Designed for those with high DHT activity (CC or GC at rs523349)
+- **🌞 Vitamin D Boosters:** Perfect for those with low VDR activity (AA or AG at rs731236)
+
+2. 30-Day Challenge 🕒
+Use your shampoo daily and log hair loss (number of hairs) in the platform.
+
+3. Discover the Truth 📊
+- See if the shampoo works for YOU
+- Get personalized insights
+- Compare your results with the entire HairDAO community
+
+**WHY JOIN:**
+
+• Help advance decentralized science (DeSci) while getting paid
+
+• Fight hair loss with cutting-edge genetics and data
+
+• Your data is always yours, private and encrypted`,
     participants: 150,
-    requiredData: ["DNA Data", "Medical History", "Progress Photos"],
+    requiredData: [
+      "Genetic Data (rs523349, rs731236)",
+      "Age & Sex",
+      "Daily Hair Loss Count",
+      "Blood Vitamin D (optional)"
+    ],
     payment: 50,
     startDate: "2024-03-01",
-    endDate: "2024-09-01",
+    endDate: "2024-04-01",
     status: 'active',
-    chatId: "your-chat-id-here"
+    chatId: "hairdao-experiment-chat",
+    icon: <FaDna size={40} />,
+    targetParticipants: 500,
+    stakingRequired: {
+      amount: 25,
+      duration: '1 month'
+    }
   },
   'running': {
     name: "Running Performance Study",
@@ -113,7 +164,7 @@ The study aims to develop AI models that can predict optimal workout patterns an
   }
 }
 
-const ExperimentDetails = ({ experiment }: { experiment: Experiment }) => {
+const ExperimentDetails = ({ experiment }: { experiment: ExperimentData }) => {
   const getStatusBadge = (status: string) => {
     const statusMap: Record<string, { color: string; text: string }> = {
       active: { color: 'bg-green-100 text-green-800', text: 'Active' },
@@ -143,12 +194,12 @@ const ExperimentDetails = ({ experiment }: { experiment: Experiment }) => {
                   <h1 className="text-3xl font-medium mb-2">{experiment.name}</h1>
                   <p className="text-gray-600">by {experiment.organization}</p>
                 </div>
-                {getStatusBadge(experiment.status)}
+                {getStatusBadge(experiment.status || 'active')}
               </div>
 
-              <p className="text-gray-600 mb-6">
-                {experiment.fullDescription}
-              </p>
+              <div className="prose prose-green max-w-none mb-6">
+                <ReactMarkdown>{experiment.fullDescription}</ReactMarkdown>
+              </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="p-4 bg-green-50 rounded-2xl">
@@ -236,12 +287,9 @@ const ExperimentDetails = ({ experiment }: { experiment: Experiment }) => {
 };
 
 export default async function ExperimentPage({ params }: { params: { id: string } }) {
-  // Get the experiment data from our experiments object
-  const experiment = experiments[params.id as keyof typeof experiments];
+  const experiment = experiments[params.id];
 
-  // If experiment doesn't exist, you might want to handle that case
   if (!experiment) {
-    // You could redirect to 404 or show an error message
     return (
       <div className="min-h-screen bg-[#f8f3ea] flex items-center justify-center">
         <div className="card p-8">
@@ -252,18 +300,22 @@ export default async function ExperimentPage({ params }: { params: { id: string 
     );
   }
 
-  // Convert the experiment data to match the Experiment interface
-  const experimentData: Experiment = {
+  const experimentData: ExperimentData = {
     id: params.id,
     name: experiment.name,
     organization: experiment.organization,
-    status: experiment.status || 'active', // Provide a default if status is missing
+    description: experiment.description,
+    status: experiment.status || 'active',
     fullDescription: experiment.fullDescription,
     participants: experiment.participants,
     payment: experiment.payment,
     startDate: experiment.startDate,
     endDate: experiment.endDate,
     requiredData: experiment.requiredData,
+    ...(experiment.chatId && { chatId: experiment.chatId }),
+    ...(experiment.icon && { icon: experiment.icon }),
+    ...(experiment.targetParticipants && { targetParticipants: experiment.targetParticipants }),
+    ...(experiment.stakingRequired && { stakingRequired: experiment.stakingRequired }),
   };
 
   return <ExperimentDetails experiment={experimentData} />;
