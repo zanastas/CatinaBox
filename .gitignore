@@ -36,3 +36,21 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# foundry
+# Compiler files
+contracts/cache/
+contracts/out/
+
+# Ignores broadcast logs
+contracts/broadcast/*
+
+# Docs
+contracts/docs/
+
+# Dotenv file
+contracts/.env
+
+# Phala
+phala/node_modules
+phala/node_modules/.bin
