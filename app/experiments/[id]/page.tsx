@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Header from '@components/header';
-import { FaUsers, FaDna, FaCalendar, FaCoins, FaLock, FaCheck, FaBrain, FaAppleAlt, FaDumbbell } from 'react-icons/fa';
+import { FaUsers, FaDna, FaCalendar, FaCoins, FaLock, FaCheck, FaBrain, FaAppleAlt, FaDumbbell, FaRunning } from 'react-icons/fa';
 import ReactMarkdown from 'react-markdown';
 import type { JSX } from 'react';
 import Link from 'next/link';
@@ -90,17 +90,63 @@ Use your shampoo daily and log hair loss (number of hairs) in the platform.
     }
   },
   'running': {
-    name: "Running Performance Study",
-    organization: "Athlete Health Research",
-    description: "Study on the impact of running on cardiovascular health",
-    fullDescription: "This study aims to understand the relationship between running frequency and cardiovascular health outcomes. Participants will contribute their running data and regular health check-ups.",
-    participants: 200,
-    requiredData: ["Running Data", "Heart Rate Data", "Health Check-ups"],
+    index: 1,
+    name: "30-Day Fitness Challenge",
+    organization: "Stake & Run",
+    description: "Study correlating exercise intensity, recovery patterns, and fitness outcomes",
+    fullDescription: `Join our comprehensive 30-day fitness study to understand how different exercise intensities affect recovery and body composition. This experiment uses wearable data to optimize workout routines and recovery periods.
+
+**WHO'S THIS FOR:**
+• Active individuals with fitness wearables (Apple Watch, Fitbit, Oura, etc.)
+• Interested in optimizing workout recovery
+• Willing to follow a structured 30-day exercise program
+
+**WHAT WE'RE STUDYING:**
+• Relationship between exercise intensity and recovery time
+• Impact of sleep quality on performance
+• Changes in resting heart rate and HRV
+• Body composition changes over 30 days
+
+**HOW IT WORKS:**
+1. Initial Assessment 📊
+- Share your baseline fitness metrics
+- Connect your wearable device
+- Record starting measurements
+
+2. 30-Day Program 💪
+- Follow provided workout templates
+- Track daily activities and recovery
+- Monitor sleep and stress levels
+
+3. Data Analysis 📈
+- Get personalized insights about your recovery patterns
+- Learn your optimal training intensity
+- Compare your results with other participants
+
+**WHY JOIN:**
+• Receive personalized exercise recommendations
+• Understand your body's recovery patterns
+• Earn rewards while contributing to fitness science
+• Keep full control of your health data`,
+    participants: 300,
+    requiredData: [
+      "Heart Rate Zones & HRV",
+      "Sleep Quality Metrics",
+      "Daily Activity Levels",
+      "Recovery Scores",
+      "Body Composition Data"
+    ],
     payment: 70,
     startDate: "2024-11-01",
     endDate: "2024-11-30",
     status: 'active',
-    chatId: "running-chat-id-here"
+    chatId: "fitness-chat-id",
+    icon: <FaRunning size={40} />,
+    targetParticipants: 500,
+    stakingRequired: {
+      amount: 30,
+      duration: '1 month'
+    }
   },
   'sleep': {
     name: "Sleep Quality Study",
@@ -263,7 +309,7 @@ const ExperimentDetails = ({ experiment }: { experiment: ExperimentData }) => {
                     <FaCoins />
                     <span className="font-medium">Reward</span>
                   </div>
-                  <p className="text-2xl font-medium">{experiment.payment} FIL</p>
+                  <p className="text-2xl font-medium">🐱 {experiment.payment} CBOX</p>
                 </div>
 
                 <div className="p-4 bg-green-50 rounded-2xl">
@@ -303,6 +349,11 @@ const ExperimentDetails = ({ experiment }: { experiment: ExperimentData }) => {
               <h2 className="text-xl font-medium mb-4">Join Experiment</h2>
               <p className="text-gray-600 mb-6">
                 Share your data securely and earn rewards for contributing to research.
+                {experiment.stakingRequired && (
+                  <span className="block mt-2">
+                    Requires staking 🐱 {experiment.stakingRequired.amount} CBOX for {experiment.stakingRequired.duration}
+                  </span>
+                )}
               </p>
               <button
                 onClick={handleJoinExperiment}
