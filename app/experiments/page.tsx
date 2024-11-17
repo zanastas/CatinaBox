@@ -28,11 +28,17 @@ export default function Experiments() {
     },
     {
       id: "running",
-      name: "Stake & Run Challenge",
-      organization: "Stake & Run DAO",
-      description: "Fitness study correlating staking rewards with running performance",
+      name: "30-Day Fitness Challenge",
+      organization: "Stake & Run",
+      description: "Study correlating exercise intensity, recovery patterns, and fitness outcomes",
       icon: <FaRunning size={40} className="text-[#2b7e21]" />,
-      requiredData: ["Wearable Data", "Fitness Metrics"],
+      requiredData: [
+        "Heart Rate Zones & HRV",
+        "Sleep Quality Metrics",
+        "Daily Activity Levels",
+        "Recovery Scores",
+        "Body Composition Data"
+      ],
       participants: 300
     },
     {
