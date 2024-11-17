@@ -6,12 +6,14 @@
   "dependencies": {
     "@lighthouse-web3/kavach": "^0.1.9",
     "@lighthouse-web3/sdk": "^0.3.7",
+    "@phala/dstack-sdk": "^0.1.4",
     "@phala/sdk": "^0.5.10",
     "@types/node": "^22.9.0",
     "dotenv": "^16.4.5",
     "ethers": "^6.13.4",
     "ts-node": "^10.9.2",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "viem": "^2.21.45"
   },
   "scripts": {
     "build": "tsc",
