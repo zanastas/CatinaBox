@@ -17,6 +17,33 @@ const CONTRACT_ABI = [
     "function getExperimentDetails(uint256 experimentId) external view returns (address owner, string memory requestedDataSpec, uint256 reward, bool active, address paymentToken, uint64 endDate)"
 ];
 
+// Add these types at the top of the file
+interface GeneticMarker {
+    marker: string;
+    gene: string;
+    include: string[];
+    exclude: string[];
+}
+
+interface StudyRequirements {
+    geneticMarkers: GeneticMarker[];
+    demographicCriteria: {
+        minAge: number;
+        maxAge: number;
+        sex: string[];
+    };
+}
+
+interface RequiredData {
+    required: string[];
+    optional: string[];
+}
+
+interface StudySpec {
+    studyRequirements: StudyRequirements;
+    requiredData: RequiredData;
+}
+
 async function deriveKey(): Promise<{ address: string, privateKey: string }> {
     const client = new TappdClient(DSTACK_ENDPOINT);
 
@@ -53,6 +80,72 @@ async function signAuthMessage(privateKey: string): Promise<string> {
     return JWT;
 }
 
+// Add this function to process the genetic data
+function processGeneticData(fileContent: string, specString: string): {
+    valid: boolean;
+    accepted: boolean;
+    extractedData: Record<string, string>;
+} {
+    try {
+        const spec: StudySpec = JSON.parse(specString);
+        const lines = fileContent.split('\n');
+        const extractedData: Record<string, string> = {};
+        const requiredMarkers = new Set(
+            spec.studyRequirements.geneticMarkers.map(m => m.marker)
+        );
+
+        // Process the genetic data file
+        for (const line of lines) {
+            if (line.startsWith('#') || !line.trim()) continue;
+
+            const [rsid, , , genotype] = line.split('\t');
+            if (requiredMarkers.has(rsid)) {
+                extractedData[rsid] = genotype;
+            }
+        }
+
+        // Validate all required markers are present
+        const foundAllMarkers = spec.studyRequirements.geneticMarkers.every(
+            marker => marker.marker in extractedData
+        );
+
+        if (!foundAllMarkers) {
+            return { valid: false, accepted: false, extractedData: {} };
+        }
+
+        // Check if genotypes match requirements
+        let accepted = true;
+        for (const marker of spec.studyRequirements.geneticMarkers) {
+            const genotype = extractedData[marker.marker];
+
+            if (marker.exclude.includes(genotype)) {
+                accepted = false;
+                break;
+            }
+
+            if (!marker.include.includes(genotype)) {
+                accepted = false;
+                break;
+            }
+        }
+
+        return {
+            valid: true,
+            accepted,
+            extractedData
+        };
+
+    } catch (error) {
+        console.error('Error processing genetic data:', error);
+        return {
+            valid: false,
+            accepted: false,
+            extractedData: {}
+        };
+    }
+}
+
+// Modify the processData function to use the new genetic data processor
 async function processData(dataCid: string, experimentId: string): Promise<{ valid: boolean, processedCid: string | null }> {
     try {
         // Get derived key pair from Phala
@@ -75,14 +168,15 @@ async function processData(dataCid: string, experimentId: string): Promise<{ val
         console.log("Experiment owner:", experimentOwner);
         console.log("Requested data spec:", requestedDataSpec);
 
-        // Get file encryption key
+        // Get file encryption key        
         const signedMessage = await signAuthMessage(privateKey);
+        console.log("signedMessage", signedMessage);
         const fileEncryptionKey = await lighthouse.fetchEncryptionKey(
             dataCid,
             publicKey,
             signedMessage
         );
-        console.log(fileEncryptionKey);
+        console.log("fileEncryptionKey", fileEncryptionKey);
         if (!fileEncryptionKey.data.key) {
             throw new Error('Failed to get encryption key');
         }
@@ -102,10 +196,18 @@ async function processData(dataCid: string, experimentId: string): Promise<{ val
             return { valid: false, processedCid: null };
         }
 
-        // Create temp file with first line
-        const tempFile = 'temp.txt';
-        fs.writeFileSync(tempFile, firstLine);
-        console.log('Wrote to temp file:', tempFile);
+        // Process the genetic data
+        const { valid, accepted, extractedData } = processGeneticData(content, requestedDataSpec);
+
+        if (!valid) {
+            return { valid: false, processedCid: null };
+        }
+
+        // Create processed data file
+        const processedContent = JSON.stringify(extractedData, null, 2);
+        const tempFile = 'sharedData.json';
+        fs.writeFileSync(tempFile, processedContent);
+        console.log('Wrote processed data to temp file:', tempFile);
 
         // Upload the processed file with encryption
         const jwt = await signAuthMessage(privateKey);
