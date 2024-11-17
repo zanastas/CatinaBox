@@ -40,8 +40,12 @@ And it allows BioDAOs/ DeSci communities to:
 - Filecoin and Lighthouse for encrypted and decentralized data storage
 - Phala for TEE (Trusted Execution Environment) computation
 - Dynamic wallet
-- Deployed on the Zircuit testnets (https://explorer.testnet.zircuit.com/address/0x0074690aC91AbF6a5E2c1E410160582D92E6a2bE?activeTab=3
-https://explorer.testnet.zircuit.com/address/0x0AEB92fB117206D3ae314dFC442db6Bcd98b4309?activeTab=3)
+- Deployed on the Zircuit testnets and verified via the Zircuit Explorer (https://explorer.testnet.zircuit.com/address/0x0074690aC91AbF6a5E2c1E410160582D92E6a2bE?activeTab=3
+https://explorer.testnet.zircuit.com/address/0x0AEB92fB117206D3ae314dFC442db6Bcd98b4309?activeTab=3) Details: We deployed our smart contracts on Zircuit which are used as  experiment management, data access control for encrypted data stored on Filecoin and to pay the users.
+The TEE is watching for contract events which trigger data validation, and encrypted partial data sharing, the result is send back to the contract on Zircuit to allow data decryption for the experiment creator.
 - Deployed on Scroll testnet and verifed on Blockscout (https://scroll-sepolia.blockscout.com/address/0xb636c074c42F383EE418a3fFF57e07b67274730A
 https://scroll-sepolia.blockscout.com/address/0xD6e4FC9f0Ab4407024d86D0349Acb3b9567BD0Bf) 
 
+### Team:
+@zanastas - product design, frontend, UI/UX
+@0xAkuti - backend, smart contract
