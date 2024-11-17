@@ -13,7 +13,8 @@ const DSTACK_ENDPOINT = process.env.DSTACK_SIMULATOR_ENDPOINT || 'http://localho
 // Contract ABI snippet for the events we care about
 const CONTRACT_ABI = [
     "event DataShareInitiated(uint256 indexed experimentId, address indexed sharer, string dataCid, bool isFullAccess)",
-    "function finalizeDataSharing(uint256 experimentId, string calldata originalCid, string calldata processedCid, address sharer, bool valid, bool accepted)"
+    "function finalizeDataSharing(uint256 experimentId, string calldata originalCid, string calldata processedCid, address sharer, bool valid, bool accepted)",
+    "function getExperimentDetails(uint256 experimentId) external view returns (address owner, string memory requestedDataSpec, uint256 reward, bool active, address paymentToken, uint64 endDate)"
 ];
 
 async function deriveKey(): Promise<{ address: string, privateKey: string }> {
@@ -52,13 +53,27 @@ async function signAuthMessage(privateKey: string): Promise<string> {
     return JWT;
 }
 
-async function processData(dataCid: string): Promise<{ valid: boolean, processedCid: string | null }> {
+async function processData(dataCid: string, experimentId: string): Promise<{ valid: boolean, processedCid: string | null }> {
     try {
         // Get derived key pair from Phala
         const { address, privateKey } = await deriveKey();
         console.log("address", address);
         console.log("privateKey", privateKey);
         const publicKey = address;
+
+        // Get experiment details
+        const contract = new ethers.Contract(
+            process.env.CONTRACT_ADDRESS!,
+            CONTRACT_ABI,
+            new ethers.Wallet(privateKey, new ethers.JsonRpcProvider(process.env.RPC_URL))
+        );
+
+        const experimentDetails = await contract.getExperimentDetails(experimentId);
+        const experimentOwner = experimentDetails[0]; // owner address
+        const requestedDataSpec = experimentDetails[1]; // data specification
+
+        console.log("Experiment owner:", experimentOwner);
+        console.log("Requested data spec:", requestedDataSpec);
 
         // Get file encryption key
         const signedMessage = await signAuthMessage(privateKey);
@@ -102,6 +117,15 @@ async function processData(dataCid: string): Promise<{ valid: boolean, processed
         );
         console.log('uploadResponse', uploadResponse);
 
+        // Share the file with experiment owner
+        const shareResponse = await lighthouse.shareFile(
+            publicKey,
+            [experimentOwner],
+            firstLine,
+            jwt
+        );
+        console.log('File shared with owner:', shareResponse);
+
         // Clean up temp file
         fs.unlinkSync(tempFile);
 
@@ -144,17 +168,17 @@ async function main() {
     contract.on("DataShareInitiated", async (experimentId, sharer, dataCid, isFullAccess, event) => {
         console.log(`New data share initiated: ${dataCid}`);
 
-        const { valid, processedCid } = await processData(dataCid);
+        const { valid, processedCid } = await processData(dataCid, experimentId.toString());
 
         // Call finalizeDataSharing
         try {
             const tx = await contract.finalizeDataSharing(
                 experimentId,
                 dataCid,
-                processedCid || dataCid, // Use original CID if processing failed
+                processedCid || dataCid,
                 sharer,
                 valid,
-                valid // accept if valid
+                valid
             );
             await tx.wait();
             console.log(`Finalized data sharing for experiment ${experimentId}`);
