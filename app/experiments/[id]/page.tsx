@@ -35,7 +35,7 @@ interface ExperimentData {
 const experiments: Record<string, ExperimentData> = {
   'hair-loss': {
     index: 0,
-    name: "DNA-Driven Hair Care Experiment",
+    name: "Personalized Shampoo Treatment Based on Your Genetic Markers",
     organization: "HairDAO",
     description: "Crack the Code. Save the Strand.",
     fullDescription: `HairDAO is on a mission to outsmart baldness with science! We've designed two cutting-edge personalized shampoos based on your genetic data to tackle hair loss at the root. Now, we need YOU to help us test them in this first-of-its-kind, decentralized science experiment.

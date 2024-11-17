@@ -19,11 +19,16 @@ export default function Experiments() {
   const [experiments] = useState<ExperimentType[]>([
     {
       id: "hair-loss",
-      name: "Hair Loss Treatment Study",
-      organization: "Hair DAO",
-      description: "Study for treatment efficacy in people with specific genetic markers",
+      name: "Personalized Shampoo Treatment Based on Your Genetic Markers",
+      organization: "HairDAO",
+      description: "Crack the Code. Save the Strand.",
       icon: <FaDna size={40} className="text-[#2b7e21]" />,
-      requiredData: ["DNA", "Medical History"],
+      requiredData: [
+        "Genetic Data (rs523349, rs731236)",
+        "Age & Sex",
+        "Daily Hair Loss Count",
+        "Blood Vitamin D (optional)"
+      ],
       participants: 150
     },
     {
